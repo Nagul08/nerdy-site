@@ -1,8 +1,9 @@
 import type { Project, GitCommit, AudioTrack } from '../types'
 
 export const SYSTEM_INFO = {
-  user: 'Nagul',
   officialName: 'Siva Kowsik S',
+  nickname: 'Nagul',
+  user: 'Siva Kowsik S',
   username: 'retr0',
   host: 'portfolio',
   title: 'Computer Science Engineering Student',

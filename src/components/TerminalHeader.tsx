@@ -155,14 +155,17 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
                 <span>]──────────────────────────────┐</span>
               </div>
               <div className="pl-3 py-0.5 border-l-2 border-[#8BE9FD]/50 my-1">
-                <div className="text-base sm:text-lg font-bold text-[#F5C2E7] tracking-tight flex items-center gap-2">
-                  <span>Nagul</span>
+                <div className="text-base sm:text-lg font-bold text-[#F5C2E7] tracking-tight flex flex-wrap items-center gap-2">
+                  <span>Siva Kowsik S</span>
+                  <span className="text-xs font-medium text-[#8BE9FD] px-1.5 py-0.5 bg-[#8BE9FD]/10 rounded border border-[#8BE9FD]/30 font-mono">
+                    aka "Nagul"
+                  </span>
                   <span className="text-xs font-normal px-2 py-0.5 rounded bg-[#CBA6F7]/10 text-[#CBA6F7] border border-[#CBA6F7]/30">
                     CSE '29
                   </span>
                 </div>
                 <div className="text-xs text-[#89B4FA] font-medium">
-                  Computer Science Engineering Student
+                  Computer Science Engineering Student @ Sri Sairam Engineering College
                 </div>
               </div>
               <div className="text-[11px] text-[#7F849C]">

@@ -39,7 +39,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
       id: 'init-1',
       output: (
         <div className="text-[#8BE9FD] space-y-1">
-          <div>Welcome to Nagul's Interactive Terminal Shell (v2.4.0)</div>
+          <div>Welcome to Siva Kowsik S (Nagul)'s Interactive Terminal Shell (v2.4.0)</div>
           <div className="text-[#7F849C] text-xs">
             Type <span className="text-[#F9E2AF] font-bold">help</span> to view available commands, or click any suggestion chip below.
           </div>
@@ -270,8 +270,8 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
       case 'whoami':
         responseNode = (
           <div className="text-xs text-[#D8DEE9] space-y-0.5">
-            <div>user: visitor@guest-workstation</div>
-            <div>privileges: read-only, guest-interactive</div>
+            <div>operator: <span className="text-[#8BE9FD] font-bold">Siva Kowsik S</span> <span className="text-[#F9E2AF] font-mono">(Nagul)</span></div>
+            <div>session: guest@workstation (read-only)</div>
             <div>user-agent: {navigator.userAgent.substring(0, 50)}...</div>
             <div>screen: {window.innerWidth}x{window.innerHeight}</div>
           </div>

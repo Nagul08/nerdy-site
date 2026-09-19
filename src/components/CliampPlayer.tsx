@@ -12,6 +12,9 @@ import {
   Maximize2,
   Minimize2,
   PlusCircle,
+  BarChart2,
+  Gauge,
+  Activity,
 } from 'lucide-react'
 import { soundFx } from '../utils/audio'
 
@@ -80,7 +83,7 @@ const EQ_FREQUENCIES = [
   '16kHz',
 ]
 
-const ASCII_LEVELS = [' ', ' ', '▂', '▃', '▄', '▅', '▆', '▇', '█']
+type VisualizerMode = 'spectrum' | 'vumeter' | 'oscilloscope'
 
 export const CliampPlayer: React.FC = () => {
   const [stationIndex, setStationIndex] = useState(0)
@@ -96,6 +99,10 @@ export const CliampPlayer: React.FC = () => {
   const [showCustomInput, setShowCustomInput] = useState(false)
   const [streamError, setStreamError] = useState<string | null>(null)
 
+  // Visualizer Mode and Peak Hold toggles
+  const [visMode, setVisMode] = useState<VisualizerMode>('spectrum')
+  const [peakHoldEnabled, setPeakHoldEnabled] = useState(true)
+
   // 10-band EQ state (-12 to +12 dB)
   const [eqLevels, setEqLevels] = useState<number[]>([
     2, 4, 3, 1, 0, 2, 4, 5, 3, 2,
@@ -103,15 +110,33 @@ export const CliampPlayer: React.FC = () => {
   const [eqEnabled, setEqEnabled] = useState(true)
 
   // Real-time spectrum analyzer bars (16 bands)
-  const [spectrumBars, setSpectrumBars] = useState<number[]>(
-    Array(16).fill(1)
-  )
+  const [spectrumBars, setSpectrumBars] = useState<number[]>(Array(16).fill(1))
+  // Floating Peak Bars (0 to 8)
+  const [peakBars, setPeakBars] = useState<number[]>(Array(16).fill(1))
+
+  // Stereo Peak VU levels (0 - 100%)
+  const [leftLevel, setLeftLevel] = useState(0)
+  const [rightLevel, setRightLevel] = useState(0)
+  const [leftPeak, setLeftPeak] = useState(0)
+  const [rightPeak, setRightPeak] = useState(0)
+  const [isOverload, setIsOverload] = useState(false)
+
+  // Oscilloscope waveform points
+  const [wavePoints, setWavePoints] = useState<number[]>(Array(32).fill(0))
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null)
   const animFrameIdRef = useRef<number | null>(null)
+
+  // Refs for tracking peak hold counters without re-triggering effect loops
+  const peakHoldCountersRef = useRef<number[]>(Array(16).fill(0))
+  const peakBarsRef = useRef<number[]>(Array(16).fill(1))
+  const leftPeakRef = useRef<number>(0)
+  const rightPeakRef = useRef<number>(0)
+  const leftPeakHoldRef = useRef<number>(0)
+  const rightPeakHoldRef = useRef<number>(0)
 
   const currentStation = RADIO_STATIONS[stationIndex]
 
@@ -184,7 +209,7 @@ export const CliampPlayer: React.FC = () => {
       const ctx = new AudioCtx()
       const analyser = ctx.createAnalyser()
       analyser.fftSize = 64
-      analyser.smoothingTimeConstant = 0.8
+      analyser.smoothingTimeConstant = 0.75
 
       const source = ctx.createMediaElementSource(audioRef.current)
       source.connect(analyser)
@@ -194,46 +219,153 @@ export const CliampPlayer: React.FC = () => {
       analyserRef.current = analyser
       sourceNodeRef.current = source
     } catch (e) {
-      // If Web Audio creates CORS error on media element or is blocked, fallback to simulated visualizer
       console.warn('Web Audio Analyser fallback mode:', e)
     }
   }
 
-  // Animation Loop for Spectrum Analyzer
+  // Animation Loop for Spectrum Analyzer, Peak Hold, Stereo VU Meters & Oscilloscope
   useEffect(() => {
-    const updateSpectrum = () => {
+    const updateVisualizers = () => {
       if (isPlaying) {
+        let currentBars: number[] = []
+        let currentWave: number[] = []
+
         if (analyserRef.current) {
-          const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount)
-          analyserRef.current.getByteFrequencyData(dataArray)
+          const freqData = new Uint8Array(analyserRef.current.frequencyBinCount)
+          analyserRef.current.getByteFrequencyData(freqData)
+
+          const timeData = new Uint8Array(analyserRef.current.fftSize)
+          analyserRef.current.getByteTimeDomainData(timeData)
 
           // Sample 16 bins across the spectrum
-          const bars: number[] = []
-          const step = Math.max(1, Math.floor(dataArray.length / 16))
+          const step = Math.max(1, Math.floor(freqData.length / 16))
           for (let i = 0; i < 16; i++) {
-            const rawVal = dataArray[i * step] || 0
-            // Map 0-255 to 0-8 level
+            const rawVal = freqData[i * step] || 0
             const scaled = Math.min(8, Math.floor((rawVal / 255) * 8.8))
-            bars.push(Math.max(1, scaled))
+            currentBars.push(Math.max(1, scaled))
           }
-          setSpectrumBars(bars)
+
+          // Sample 32 points for oscilloscope
+          const waveStep = Math.max(1, Math.floor(timeData.length / 32))
+          for (let i = 0; i < 32; i++) {
+            const raw = (timeData[i * waveStep] - 128) / 128
+            currentWave.push(raw)
+          }
+
+          // Calculate Stereo Energy / VU meters
+          let sumSq = 0
+          for (let i = 0; i < timeData.length; i++) {
+            const norm = (timeData[i] - 128) / 128
+            sumSq += norm * norm
+          }
+          const rms = Math.sqrt(sumSq / timeData.length)
+          const lRaw = Math.min(100, Math.round(rms * 190 + (currentBars[2] || 0) * 5))
+          const rRaw = Math.min(100, Math.round(rms * 185 + (currentBars[11] || 0) * 5.5))
+
+          setLeftLevel(lRaw)
+          setRightLevel(rRaw)
+          setIsOverload(lRaw > 92 || rRaw > 92)
+
+          // Track Stereo Peak VU Meters with hold and gravity decay
+          if (lRaw >= leftPeakRef.current) {
+            leftPeakRef.current = lRaw
+            leftPeakHoldRef.current = 15
+          } else if (leftPeakHoldRef.current > 0) {
+            leftPeakHoldRef.current--
+          } else {
+            leftPeakRef.current = Math.max(0, leftPeakRef.current - 2.5)
+          }
+
+          if (rRaw >= rightPeakRef.current) {
+            rightPeakRef.current = rRaw
+            rightPeakHoldRef.current = 15
+          } else if (rightPeakHoldRef.current > 0) {
+            rightPeakHoldRef.current--
+          } else {
+            rightPeakRef.current = Math.max(0, rightPeakRef.current - 2.5)
+          }
+
+          setLeftPeak(Math.round(leftPeakRef.current))
+          setRightPeak(Math.round(rightPeakRef.current))
         } else {
           // Synthetic audio reactive simulation based on rhythm & sine waves
           const time = Date.now() / 200
-          const bars = Array.from({ length: 16 }, (_, i) => {
+          for (let i = 0; i < 16; i++) {
             const wave = Math.sin(time + i * 0.4) * 3.5 + Math.cos(time * 1.5 + i * 0.8) * 2.5 + 4
-            return Math.min(8, Math.max(1, Math.floor(wave)))
-          })
-          setSpectrumBars(bars)
+            currentBars.push(Math.min(8, Math.max(1, Math.floor(wave))))
+          }
+
+          for (let i = 0; i < 32; i++) {
+            currentWave.push(Math.sin(time * 2 + i * 0.3) * 0.75)
+          }
+
+          const synL = Math.min(95, Math.max(20, Math.round(Math.abs(Math.sin(time)) * 85 + 10)))
+          const synR = Math.min(95, Math.max(20, Math.round(Math.abs(Math.cos(time * 0.9)) * 85 + 10)))
+          setLeftLevel(synL)
+          setRightLevel(synR)
+          setIsOverload(synL > 90 || synR > 90)
+
+          if (synL >= leftPeakRef.current) {
+            leftPeakRef.current = synL
+            leftPeakHoldRef.current = 12
+          } else if (leftPeakHoldRef.current > 0) {
+            leftPeakHoldRef.current--
+          } else {
+            leftPeakRef.current = Math.max(0, leftPeakRef.current - 2)
+          }
+
+          if (synR >= rightPeakRef.current) {
+            rightPeakRef.current = synR
+            rightPeakHoldRef.current = 12
+          } else if (rightPeakHoldRef.current > 0) {
+            rightPeakHoldRef.current--
+          } else {
+            rightPeakRef.current = Math.max(0, rightPeakRef.current - 2)
+          }
+
+          setLeftPeak(Math.round(leftPeakRef.current))
+          setRightPeak(Math.round(rightPeakRef.current))
         }
+
+        setSpectrumBars(currentBars)
+        setWavePoints(currentWave)
+
+        // Calculate 16-Band Peak Hold with Gravity
+        const nextPeaks = [...peakBarsRef.current]
+        const nextCounters = [...peakHoldCountersRef.current]
+
+        for (let i = 0; i < 16; i++) {
+          const barVal = currentBars[i] || 1
+          if (barVal >= nextPeaks[i]) {
+            nextPeaks[i] = barVal
+            nextCounters[i] = 14 // hold for ~230ms
+          } else if (nextCounters[i] > 0) {
+            nextCounters[i]--
+          } else {
+            // Smooth gravity descent
+            nextPeaks[i] = Math.max(barVal, nextPeaks[i] - 0.22)
+          }
+        }
+
+        peakBarsRef.current = nextPeaks
+        peakHoldCountersRef.current = nextCounters
+        setPeakBars(nextPeaks)
       } else {
+        // Idle State: Decay smoothly to baseline
         setSpectrumBars(Array(16).fill(1))
+        setPeakBars(Array(16).fill(1))
+        setLeftLevel(0)
+        setRightLevel(0)
+        setLeftPeak(0)
+        setRightPeak(0)
+        setIsOverload(false)
+        setWavePoints(Array(32).fill(0))
       }
 
-      animFrameIdRef.current = requestAnimationFrame(updateSpectrum)
+      animFrameIdRef.current = requestAnimationFrame(updateVisualizers)
     }
 
-    animFrameIdRef.current = requestAnimationFrame(updateSpectrum)
+    animFrameIdRef.current = requestAnimationFrame(updateVisualizers)
     return () => {
       if (animFrameIdRef.current) {
         cancelAnimationFrame(animFrameIdRef.current)
@@ -355,7 +487,7 @@ export const CliampPlayer: React.FC = () => {
               soundFx.playClick('key')
               setShowEqualizer(!showEqualizer)
             }}
-            className={`px-1.5 py-0.5 text-[10px] rounded border ${
+            className={`px-1.5 py-0.5 text-[10px] rounded border cursor-pointer ${
               showEqualizer
                 ? 'bg-[#CBA6F7] text-[#111420] border-[#CBA6F7] font-bold'
                 : 'bg-[#181B28] text-[#7F849C] border-[#282C3F] hover:text-[#D8DEE9]'
@@ -369,7 +501,7 @@ export const CliampPlayer: React.FC = () => {
               soundFx.playClick('key')
               setShowStationsList(!showStationsList)
             }}
-            className={`px-1.5 py-0.5 text-[10px] rounded border ${
+            className={`px-1.5 py-0.5 text-[10px] rounded border cursor-pointer ${
               showStationsList
                 ? 'bg-[#8BE9FD] text-[#111420] border-[#8BE9FD] font-bold'
                 : 'bg-[#181B28] text-[#7F849C] border-[#282C3F] hover:text-[#D8DEE9]'
@@ -414,8 +546,13 @@ export const CliampPlayer: React.FC = () => {
               </div>
             </div>
 
-            {/* Audio format indicators */}
+            {/* Audio format indicators & Overload Clip Warning */}
             <div className="flex items-center space-x-1.5 text-[10px]">
+              {isOverload && (
+                <span className="px-1.5 py-0.5 rounded bg-[#F38BA8] text-[#111420] font-bold animate-pulse">
+                  CLIP
+                </span>
+              )}
               <span className="px-1 py-0.5 rounded bg-[#1A1E30] text-[#CBA6F7] border border-[#2B314F]">
                 44.1 kHz
               </span>
@@ -436,26 +573,278 @@ export const CliampPlayer: React.FC = () => {
             </div>
           </div>
 
-          {/* Real-time Spectrum Analyzer Bars (ASCII / CAVA style) */}
-          <div className="pt-1 flex items-end justify-between px-1 h-8 bg-[#040509] rounded border border-[#141824]">
-            {spectrumBars.map((val, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center justify-end h-full w-full select-none"
+          {/* Visualizer Mode Header & Peak Hold Toggle */}
+          <div className="flex items-center justify-between text-[10px] text-[#7F849C] pt-1 border-t border-[#141824] px-0.5">
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={() => {
+                  soundFx.playClick('key')
+                  setVisMode('spectrum')
+                }}
+                className={`px-1.5 py-0.5 rounded border flex items-center gap-1 cursor-pointer transition-colors ${
+                  visMode === 'spectrum'
+                    ? 'bg-[#8BE9FD]/20 text-[#8BE9FD] border-[#8BE9FD]/40 font-bold'
+                    : 'bg-[#101320] text-[#7F849C] border-[#1C2030] hover:text-[#D8DEE9]'
+                }`}
+                title="16-Band Equalizer with Floating Peak Caps"
               >
-                <span
-                  className={`text-xs leading-none font-bold transition-all duration-75 ${
-                    val >= 7
-                      ? 'text-[#F38BA8] drop-shadow-[0_0_3px_#F38BA8]'
-                      : val >= 4
-                      ? 'text-[#F9E2AF] drop-shadow-[0_0_2px_#F9E2AF]'
-                      : 'text-[#A6E3A1] drop-shadow-[0_0_2px_#A6E3A1]'
-                  }`}
-                >
-                  {ASCII_LEVELS[val] || ' '}
-                </span>
+                <BarChart2 className="w-3 h-3" />
+                <span>SPECTRUM+PEAKS</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundFx.playClick('key')
+                  setVisMode('vumeter')
+                }}
+                className={`px-1.5 py-0.5 rounded border flex items-center gap-1 cursor-pointer transition-colors ${
+                  visMode === 'vumeter'
+                    ? 'bg-[#CBA6F7]/20 text-[#CBA6F7] border-[#CBA6F7]/40 font-bold'
+                    : 'bg-[#101320] text-[#7F849C] border-[#1C2030] hover:text-[#D8DEE9]'
+                }`}
+                title="Dual Channel Peak VU Level Meters"
+              >
+                <Gauge className="w-3 h-3" />
+                <span>STEREO VU</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundFx.playClick('key')
+                  setVisMode('oscilloscope')
+                }}
+                className={`px-1.5 py-0.5 rounded border flex items-center gap-1 cursor-pointer transition-colors ${
+                  visMode === 'oscilloscope'
+                    ? 'bg-[#A6E3A1]/20 text-[#A6E3A1] border-[#A6E3A1]/40 font-bold'
+                    : 'bg-[#101320] text-[#7F849C] border-[#1C2030] hover:text-[#D8DEE9]'
+                }`}
+                title="Live Audio Waveform Oscilloscope"
+              >
+                <Activity className="w-3 h-3" />
+                <span>OSC WAVE</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                soundFx.playClick('tab')
+                setPeakHoldEnabled(!peakHoldEnabled)
+              }}
+              className={`px-1.5 py-0.5 rounded border text-[9px] cursor-pointer ${
+                peakHoldEnabled
+                  ? 'bg-[#F9E2AF]/15 text-[#F9E2AF] border-[#F9E2AF]/40'
+                  : 'bg-[#101320] text-[#585B70] border-[#1C2030]'
+              }`}
+              title="Toggle floating peak hold markers"
+            >
+              PEAK HOLD: {peakHoldEnabled ? 'ON' : 'OFF'}
+            </button>
+          </div>
+
+          {/* VISUALIZER DISPLAY CONTAINER */}
+          <div className="bg-[#040508] p-2 rounded border border-[#141824] min-h-[72px] flex flex-col justify-center">
+            {/* MODE 1: 16-BAND SPECTRUM WITH FLOATING PEAK HOLD CAPS */}
+            {visMode === 'spectrum' && (
+              <div className="flex items-end justify-between gap-1 sm:gap-1.5 h-16 px-1">
+                {spectrumBars.map((val, idx) => {
+                  const peakVal = peakHoldEnabled
+                    ? Math.min(8, Math.max(1, Math.round(peakBars[idx] || 1)))
+                    : val
+
+                  return (
+                    <div
+                      key={idx}
+                      className="flex-1 flex flex-col justify-end items-center h-full relative group"
+                    >
+                      {/* Floating Peak Hold Cap with Gravity */}
+                      {peakHoldEnabled && (
+                        <div
+                          className="absolute w-full h-[2.5px] rounded-xs transition-all duration-75 z-10"
+                          style={{
+                            bottom: `${Math.max(4, (peakVal / 8) * 100 - 4)}%`,
+                            backgroundColor:
+                              peakVal >= 7 ? '#F38BA8' : peakVal >= 4 ? '#F9E2AF' : '#8BE9FD',
+                            boxShadow:
+                              peakVal >= 7
+                                ? '0 0 4px #F38BA8'
+                                : peakVal >= 4
+                                ? '0 0 3px #F9E2AF'
+                                : '0 0 3px #8BE9FD',
+                          }}
+                        />
+                      )}
+
+                      {/* 8-Segment Vertical LED Bar */}
+                      <div className="w-full flex flex-col justify-end gap-[1.5px] h-full">
+                        {Array.from({ length: 8 }).map((_, segIdx) => {
+                          const segLevel = 8 - segIdx
+                          const isLit = val >= segLevel
+                          const color =
+                            segLevel >= 7
+                              ? isLit
+                                ? 'bg-[#F38BA8] shadow-[0_0_3px_#F38BA8]'
+                                : 'bg-[#2A1622]/40'
+                              : segLevel >= 4
+                              ? isLit
+                                ? 'bg-[#F9E2AF] shadow-[0_0_2px_#F9E2AF]'
+                                : 'bg-[#2B271A]/40'
+                              : isLit
+                              ? 'bg-[#A6E3A1] shadow-[0_0_2px_#A6E3A1]'
+                              : 'bg-[#14261B]/40'
+
+                          return (
+                            <div
+                              key={segIdx}
+                              className={`w-full h-[3.5px] rounded-xs transition-colors duration-75 ${color}`}
+                            />
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            ))}
+            )}
+
+            {/* MODE 2: DUAL STEREO PEAK VU METERS (CH-L & CH-R) */}
+            {visMode === 'vumeter' && (
+              <div className="space-y-2.5 py-0.5">
+                {/* Left Channel */}
+                <div>
+                  <div className="flex justify-between text-[10px] text-[#7F849C] mb-1">
+                    <span className="text-[#8BE9FD] font-bold">CH-L (LEFT)</span>
+                    <span className="font-mono text-xs text-[#A6E3A1]">
+                      PEAK:{' '}
+                      <span className={leftPeak > 88 ? 'text-[#F38BA8] font-bold' : 'text-[#8BE9FD]'}>
+                        {leftPeak > 88 ? '-0.8 dB' : leftPeak > 60 ? '-4.2 dB' : leftPeak > 30 ? '-10 dB' : '-22 dB'}
+                      </span>{' '}
+                      [{leftPeak}%]
+                    </span>
+                  </div>
+                  <div className="h-3.5 bg-[#090C16] rounded-xs p-0.5 border border-[#1A1F30] relative overflow-hidden flex items-center">
+                    {/* 28-Segment Bar */}
+                    <div className="flex-1 flex gap-0.5 h-full">
+                      {Array.from({ length: 28 }).map((_, i) => {
+                        const threshold = (i / 28) * 100
+                        const isLit = leftLevel >= threshold
+                        const color =
+                          i >= 23
+                            ? isLit
+                              ? 'bg-[#F38BA8] shadow-[0_0_4px_#F38BA8]'
+                              : 'bg-[#2A1620]'
+                            : i >= 16
+                            ? isLit
+                              ? 'bg-[#F9E2AF] shadow-[0_0_3px_#F9E2AF]'
+                              : 'bg-[#262215]'
+                            : isLit
+                            ? 'bg-[#A6E3A1] shadow-[0_0_3px_#A6E3A1]'
+                            : 'bg-[#122216]'
+
+                        return <div key={i} className={`flex-1 h-full rounded-xs ${color}`} />
+                      })}
+                    </div>
+                    {/* Peak Pointer Indicator */}
+                    {peakHoldEnabled && (
+                      <div
+                        className="absolute top-0 bottom-0 w-1.5 bg-white shadow-[0_0_6px_#FFFFFF] rounded-xs transition-all duration-75"
+                        style={{ left: `${Math.max(2, Math.min(97, leftPeak))}%` }}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Channel */}
+                <div>
+                  <div className="flex justify-between text-[10px] text-[#7F849C] mb-1">
+                    <span className="text-[#CBA6F7] font-bold">CH-R (RIGHT)</span>
+                    <span className="font-mono text-xs text-[#A6E3A1]">
+                      PEAK:{' '}
+                      <span className={rightPeak > 88 ? 'text-[#F38BA8] font-bold' : 'text-[#CBA6F7]'}>
+                        {rightPeak > 88 ? '-0.5 dB' : rightPeak > 60 ? '-3.9 dB' : rightPeak > 30 ? '-9 dB' : '-21 dB'}
+                      </span>{' '}
+                      [{rightPeak}%]
+                    </span>
+                  </div>
+                  <div className="h-3.5 bg-[#090C16] rounded-xs p-0.5 border border-[#1A1F30] relative overflow-hidden flex items-center">
+                    {/* 28-Segment Bar */}
+                    <div className="flex-1 flex gap-0.5 h-full">
+                      {Array.from({ length: 28 }).map((_, i) => {
+                        const threshold = (i / 28) * 100
+                        const isLit = rightLevel >= threshold
+                        const color =
+                          i >= 23
+                            ? isLit
+                              ? 'bg-[#F38BA8] shadow-[0_0_4px_#F38BA8]'
+                              : 'bg-[#2A1620]'
+                            : i >= 16
+                            ? isLit
+                              ? 'bg-[#F9E2AF] shadow-[0_0_3px_#F9E2AF]'
+                              : 'bg-[#262215]'
+                            : isLit
+                            ? 'bg-[#A6E3A1] shadow-[0_0_3px_#A6E3A1]'
+                            : 'bg-[#122216]'
+
+                        return <div key={i} className={`flex-1 h-full rounded-xs ${color}`} />
+                      })}
+                    </div>
+                    {/* Peak Pointer Indicator */}
+                    {peakHoldEnabled && (
+                      <div
+                        className="absolute top-0 bottom-0 w-1.5 bg-white shadow-[0_0_6px_#FFFFFF] rounded-xs transition-all duration-75"
+                        style={{ left: `${Math.max(2, Math.min(97, rightPeak))}%` }}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* dB Scale Legend */}
+                <div className="flex justify-between text-[8px] text-[#585B70] px-1 font-mono pt-0.5">
+                  <span>-30dB</span>
+                  <span>-20dB</span>
+                  <span>-12dB</span>
+                  <span>-6dB</span>
+                  <span>-3dB</span>
+                  <span className="text-[#F9E2AF]">0dB</span>
+                  <span className="text-[#F38BA8]">+3dB (CLIP)</span>
+                </div>
+              </div>
+            )}
+
+            {/* MODE 3: OSCILLOSCOPE WAVEFORM */}
+            {visMode === 'oscilloscope' && (
+              <div className="h-16 relative flex items-center justify-center overflow-hidden">
+                {/* Center Baseline */}
+                <div className="absolute inset-x-0 top-1/2 h-[1px] bg-[#1C2235] border-dashed" />
+                {/* Upper / Lower Peak Envelope Limit Markers */}
+                <div className="absolute inset-x-0 top-1.5 h-[1px] bg-[#F38BA8]/30 text-[8px] text-[#F38BA8] px-1 flex justify-between select-none">
+                  <span>+1.0 PEAK</span>
+                  <span>LIMIT</span>
+                </div>
+                <div className="absolute inset-x-0 bottom-1.5 h-[1px] bg-[#F38BA8]/30 text-[8px] text-[#F38BA8] px-1 flex justify-between select-none">
+                  <span>-1.0 PEAK</span>
+                  <span>LIMIT</span>
+                </div>
+
+                {/* SVG Oscilloscope Line */}
+                <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 50">
+                  <polyline
+                    fill="none"
+                    stroke="#8BE9FD"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    points={wavePoints
+                      .map((val, i) => {
+                        const x = (i / (wavePoints.length - 1)) * 100
+                        const y = 25 - val * 22
+                        return `${x.toFixed(1)},${y.toFixed(1)}`
+                      })
+                      .join(' ')}
+                    filter="drop-shadow(0 0 4px #8BE9FD)"
+                  />
+                </svg>
+              </div>
+            )}
           </div>
         </div>
 
@@ -565,7 +954,7 @@ export const CliampPlayer: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setEqEnabled(!eqEnabled)}
-                  className={`px-2 py-0.5 rounded text-[10px] border ${
+                  className={`px-2 py-0.5 rounded text-[10px] border cursor-pointer ${
                     eqEnabled
                       ? 'bg-[#A6E3A1]/20 text-[#A6E3A1] border-[#A6E3A1]/50'
                       : 'bg-[#181B28] text-[#585B70] border-[#282C3F]'
@@ -575,7 +964,7 @@ export const CliampPlayer: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setEqLevels([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])}
-                  className="px-2 py-0.5 rounded text-[10px] bg-[#181B28] text-[#7F849C] border border-[#282C3F] hover:text-[#D8DEE9]"
+                  className="px-2 py-0.5 rounded text-[10px] bg-[#181B28] text-[#7F849C] border border-[#282C3F] hover:text-[#D8DEE9] cursor-pointer"
                 >
                   FLAT
                 </button>
@@ -692,7 +1081,7 @@ export const CliampPlayer: React.FC = () => {
         <div className="shrink-0 flex items-center space-x-2">
           <span>BUFF: 512KB</span>
           <span>•</span>
-          <span className="text-[#A6E3A1]">ICY-OK</span>
+          <span className="text-[#A6E3A1]">PEAKS: ACTIVE</span>
         </div>
       </div>
     </div>

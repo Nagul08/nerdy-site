@@ -122,15 +122,24 @@ Location: Chennai, India`
             <div className="lg:col-span-7 flex flex-col justify-center">
               {/* User@Host Header */}
               <div className="mb-4">
-                <div className="text-xl sm:text-2xl font-bold font-mono tracking-tight flex items-center gap-2">
-                  <span className="text-[#8BE9FD]">retr0</span>
-                  <span className="text-[#7F849C]">@</span>
-                  <span className="text-[#CBA6F7]">portfolio</span>
-                  <span className="text-xs font-normal px-2 py-0.5 rounded bg-[#CBA6F7]/10 text-[#CBA6F7] border border-[#CBA6F7]/30 ml-2">
+                <div className="flex flex-wrap items-baseline gap-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold font-mono text-[#F5C2E7] tracking-tight">
                     Siva Kowsik S
+                  </h1>
+                  <span className="text-sm font-medium text-[#8BE9FD] font-mono">
+                    (aka <span className="text-[#F9E2AF] font-bold">"Nagul"</span>)
                   </span>
                 </div>
-                <div className="font-mono text-xs text-[#585B70] mt-0.5">
+                <div className="text-xs sm:text-sm font-mono text-[#7F849C] flex items-center gap-2 mt-1">
+                  <span className="text-[#8BE9FD]">retr0</span>
+                  <span>@</span>
+                  <span className="text-[#CBA6F7]">portfolio</span>
+                  <span>•</span>
+                  <span className="text-[#A6E3A1]">B.E. CSE '29</span>
+                  <span>•</span>
+                  <span>Sri Sairam Engineering College</span>
+                </div>
+                <div className="font-mono text-xs text-[#585B70] mt-1.5">
                   ─────────────────────────────────────────────────────
                 </div>
               </div>
