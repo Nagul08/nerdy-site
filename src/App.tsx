@@ -19,10 +19,19 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [isTerminalOpen, setIsTerminalOpen] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(() => getRandomTheme())
-  const [crtEnabled, setCrtEnabled] = useState<boolean>(() => {
-    const saved = localStorage.getItem('niko_crt_enabled')
+  const [tvGlowEnabled, setTvGlowEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('niko_tv_glow_enabled')
     return saved !== null ? saved === 'true' : true
   })
+  const [crtScanlinesEnabled, setCrtScanlinesEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('niko_crt_scanlines_enabled')
+    return saved !== null ? saved === 'true' : true
+  })
+
+  // Trigger animation flash states for tactile power-on / degauss feedback
+  const [tvTriggerActive, setTvTriggerActive] = useState(false)
+  const [crtTriggerActive, setCrtTriggerActive] = useState(false)
+
   const [showIntro, setShowIntro] = useState(() => {
     return !sessionStorage.getItem('has_seen_niko_intro')
   })
@@ -30,10 +39,26 @@ export default function App() {
   // Dynamic Animated Favicon synced with current active theme palette
   useAnimatedFavicon(currentTheme)
 
-  const handleToggleCrt = (forceState?: boolean) => {
-    setCrtEnabled((prev) => {
+  const handleToggleTvGlow = (forceState?: boolean) => {
+    setTvGlowEnabled((prev) => {
       const next = typeof forceState === 'boolean' ? forceState : !prev
-      localStorage.setItem('niko_crt_enabled', String(next))
+      localStorage.setItem('niko_tv_glow_enabled', String(next))
+      if (next) {
+        setTvTriggerActive(true)
+        setTimeout(() => setTvTriggerActive(false), 520)
+      }
+      return next
+    })
+  }
+
+  const handleToggleCrt = (forceState?: boolean) => {
+    setCrtScanlinesEnabled((prev) => {
+      const next = typeof forceState === 'boolean' ? forceState : !prev
+      localStorage.setItem('niko_crt_scanlines_enabled', String(next))
+      if (next) {
+        setCrtTriggerActive(true)
+        setTimeout(() => setCrtTriggerActive(false), 540)
+      }
       return next
     })
   }
@@ -140,11 +165,26 @@ export default function App() {
         <div className="absolute inset-0 crt-overlay opacity-15 pointer-events-none" />
       </div>
 
-      {/* Old TV Cathode Tube Phosphor Glow & Rolling Scanlines Layer */}
-      {crtEnabled && <div className="old-tv-screen pointer-events-none" />}
+      {/* 1. Old TV Glow Effect (Cathode Tube Curvature, Vignette & Phosphor Bloom) */}
+      {tvGlowEnabled && (
+        <div
+          className={`tv-glow-screen pointer-events-none ${
+            tvTriggerActive ? 'animate-tv-trigger' : ''
+          }`}
+        />
+      )}
+
+      {/* 2. CRT Scanlines Effect (Raster Scanlines & Rolling Refresh Beam) */}
+      {crtScanlinesEnabled && (
+        <div
+          className={`crt-scanlines-screen pointer-events-none ${
+            crtTriggerActive ? 'animate-crt-trigger' : ''
+          }`}
+        />
+      )}
 
       {/* Dedicated Retro CRT Monitor Scanline Raster Layer for Sunset Theme (matches Spidey.png) */}
-      {currentTheme === 'sunset' && crtEnabled && (
+      {currentTheme === 'sunset' && crtScanlinesEnabled && (
         <div className="crt-sunset-scanlines pointer-events-none" />
       )}
 
@@ -163,7 +203,9 @@ export default function App() {
           onToggleTerminal={() => setIsTerminalOpen((prev) => !prev)}
           currentTheme={currentTheme}
           onChangeTheme={setCurrentTheme}
-          crtEnabled={crtEnabled}
+          tvGlowEnabled={tvGlowEnabled}
+          onToggleTvGlow={handleToggleTvGlow}
+          crtScanlinesEnabled={crtScanlinesEnabled}
           onToggleCrt={handleToggleCrt}
         />
 
@@ -205,7 +247,9 @@ export default function App() {
           onToggleMatrix={() => {}}
           onChangeTheme={setCurrentTheme}
           onReplayIntro={() => setShowIntro(true)}
-          crtEnabled={crtEnabled}
+          tvGlowEnabled={tvGlowEnabled}
+          onToggleTvGlow={handleToggleTvGlow}
+          crtScanlinesEnabled={crtScanlinesEnabled}
           onToggleCrt={handleToggleCrt}
         />
       </div>

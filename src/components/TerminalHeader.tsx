@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Menu, X, Terminal, Palette, Tv } from 'lucide-react'
+import { Menu, X, Terminal, Palette, Tv, Monitor } from 'lucide-react'
 import { GithubIcon } from './BrandIcons'
 import { soundFx } from '../utils/audio'
 import danteImg from '../assets/danteX.jpg'
@@ -12,7 +12,9 @@ interface TerminalHeaderProps {
   onToggleTerminal: () => void
   currentTheme: ThemeName
   onChangeTheme: (theme: ThemeName) => void
-  crtEnabled: boolean
+  tvGlowEnabled: boolean
+  onToggleTvGlow: () => void
+  crtScanlinesEnabled: boolean
   onToggleCrt: () => void
 }
 
@@ -22,7 +24,9 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
   onToggleTerminal,
   currentTheme,
   onChangeTheme,
-  crtEnabled,
+  tvGlowEnabled,
+  onToggleTvGlow,
+  crtScanlinesEnabled,
   onToggleCrt,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -148,15 +152,20 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
                   )
                 })}
 
-                {/* CRT / Old TV Effect Toggle */}
-                <div className="pt-1.5 mt-1.5 border-t border-[#1e2438]">
+                {/* Separate Retro Display & Filter Controls */}
+                <div className="pt-2 mt-1.5 border-t border-[#1e2438] space-y-1">
+                  <div className="text-[10px] text-[#64748B] px-2 py-0.5 uppercase tracking-wider font-semibold">
+                    Display Effects
+                  </div>
+
+                  {/* Toggle 1: Old TV Glow */}
                   <button
                     onClick={() => {
-                      soundFx.playClick('tab')
-                      onToggleCrt()
+                      soundFx.playClick('enter')
+                      onToggleTvGlow()
                     }}
                     className="w-full text-left px-2.5 py-1.5 rounded flex items-center justify-between cursor-pointer hover:bg-[#141828] transition-colors group"
-                    title="Toggle Old Television Cathode-Ray Bloom & Scanlines"
+                    title="Vintage Cathode Tube Phosphor Bloom & Curvature Vignette"
                   >
                     <div className="flex items-center space-x-2">
                       <Tv className="w-3.5 h-3.5" style={{ color: activeThemeConfig.primaryHex }} />
@@ -164,14 +173,40 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
                     </div>
                     <span
                       style={{
-                        borderColor: crtEnabled ? activeThemeConfig.primaryHex : '#2A324B',
-                        color: crtEnabled ? activeThemeConfig.primaryHex : '#64748B',
+                        borderColor: tvGlowEnabled ? activeThemeConfig.primaryHex : '#2A324B',
+                        color: tvGlowEnabled ? activeThemeConfig.primaryHex : '#64748B',
                       }}
                       className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                        crtEnabled ? 'bg-accent-soft' : 'bg-[#181D2E]'
+                        tvGlowEnabled ? 'bg-accent-soft' : 'bg-[#181D2E]'
                       }`}
                     >
-                      {crtEnabled ? 'ON' : 'OFF'}
+                      {tvGlowEnabled ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
+
+                  {/* Toggle 2: CRT Scanlines */}
+                  <button
+                    onClick={() => {
+                      soundFx.playClick('tab')
+                      onToggleCrt()
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded flex items-center justify-between cursor-pointer hover:bg-[#141828] transition-colors group"
+                    title="CRT Monitor Scanlines & Rolling Refresh Beam"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Monitor className="w-3.5 h-3.5" style={{ color: activeThemeConfig.primaryHex }} />
+                      <span className="text-[#CBD5E1] group-hover:text-[#F8FAFC]">CRT Scanlines</span>
+                    </div>
+                    <span
+                      style={{
+                        borderColor: crtScanlinesEnabled ? activeThemeConfig.primaryHex : '#2A324B',
+                        color: crtScanlinesEnabled ? activeThemeConfig.primaryHex : '#64748B',
+                      }}
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                        crtScanlinesEnabled ? 'bg-accent-soft' : 'bg-[#181D2E]'
+                      }`}
+                    >
+                      {crtScanlinesEnabled ? 'ON' : 'OFF'}
                     </span>
                   </button>
                 </div>
@@ -179,24 +214,45 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             )}
           </div>
 
-          {/* Quick 1-Click CRT TV Glow Toggle */}
+          {/* Quick 1-Click Old TV Glow Toggle */}
+          <button
+            onClick={() => {
+              soundFx.playClick('enter')
+              onToggleTvGlow()
+            }}
+            style={{
+              borderColor: tvGlowEnabled ? activeThemeConfig.primaryHex + '70' : '#232a40',
+              color: tvGlowEnabled ? activeThemeConfig.primaryHex : '#94A3B8',
+            }}
+            className={`px-2 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] border text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+              tvGlowEnabled ? 'bg-accent-soft' : ''
+            }`}
+            title={`Toggle Old TV Phosphor Glow (${tvGlowEnabled ? 'Active' : 'Disabled'})`}
+          >
+            <Tv className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[11px] font-semibold">
+              TV {tvGlowEnabled ? 'ON' : 'OFF'}
+            </span>
+          </button>
+
+          {/* Quick 1-Click CRT Scanlines Toggle */}
           <button
             onClick={() => {
               soundFx.playClick('tab')
               onToggleCrt()
             }}
             style={{
-              borderColor: crtEnabled ? activeThemeConfig.primaryHex + '70' : '#232a40',
-              color: crtEnabled ? activeThemeConfig.primaryHex : '#94A3B8',
+              borderColor: crtScanlinesEnabled ? activeThemeConfig.primaryHex + '70' : '#232a40',
+              color: crtScanlinesEnabled ? activeThemeConfig.primaryHex : '#94A3B8',
             }}
             className={`px-2 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] border text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
-              crtEnabled ? 'bg-accent-soft' : ''
+              crtScanlinesEnabled ? 'bg-accent-soft' : ''
             }`}
-            title={`Toggle Old TV CRT Filter (${crtEnabled ? 'Active' : 'Disabled'})`}
+            title={`Toggle CRT Scanlines & Rolling Beam (${crtScanlinesEnabled ? 'Active' : 'Disabled'})`}
           >
-            <Tv className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-semibold">
-              CRT {crtEnabled ? 'ON' : 'OFF'}
+            <Monitor className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[11px] font-semibold">
+              CRT {crtScanlinesEnabled ? 'ON' : 'OFF'}
             </span>
           </button>
 

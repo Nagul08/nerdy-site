@@ -21,7 +21,9 @@ interface InteractiveTerminalModalProps {
   onToggleMatrix: () => void
   onChangeTheme: (theme: ThemeName) => void
   onReplayIntro?: () => void
-  crtEnabled?: boolean
+  tvGlowEnabled?: boolean
+  onToggleTvGlow?: (force?: boolean) => void
+  crtScanlinesEnabled?: boolean
   onToggleCrt?: (force?: boolean) => void
 }
 
@@ -39,7 +41,9 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
   onToggleMatrix,
   onChangeTheme,
   onReplayIntro,
-  crtEnabled = true,
+  tvGlowEnabled = true,
+  onToggleTvGlow,
+  crtScanlinesEnabled = true,
   onToggleCrt,
 }) => {
   const [inputVal, setInputVal] = useState('')
@@ -107,8 +111,12 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
                 <span className="text-[#94A3B8]"> - sunset | dusk | crimson | noir | random</span>
               </div>
               <div>
+                <span className="text-accent font-bold font-mono">tv [on|off]</span>
+                <span className="text-[#94A3B8]"> - Toggle vintage TV phosphor bloom & vignette</span>
+              </div>
+              <div>
                 <span className="text-accent font-bold font-mono">crt [on|off]</span>
-                <span className="text-[#94A3B8]"> - Toggle vintage CRT glow & scanlines</span>
+                <span className="text-[#94A3B8]"> - Toggle CRT monitor scanlines & raster roll</span>
               </div>
               <div>
                 <span className="text-accent font-bold font-mono">projects</span>
@@ -237,8 +245,8 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
         break
       }
 
-      case 'crt':
-      case 'tv': {
+      case 'tv':
+      case 'glow': {
         const subArg = args[0]?.toLowerCase()
         let nextState: boolean
         if (subArg === 'on' || subArg === 'enable' || subArg === '1') {
@@ -246,7 +254,39 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
         } else if (subArg === 'off' || subArg === 'disable' || subArg === '0') {
           nextState = false
         } else {
-          nextState = !crtEnabled
+          nextState = !tvGlowEnabled
+        }
+
+        if (onToggleTvGlow) {
+          onToggleTvGlow(nextState)
+        }
+
+        responseNode = (
+          <div className="text-xs space-y-1">
+            <div className="text-[#10B981] font-bold flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5" />
+              <span>Old TV Phosphor Glow Effect: {nextState ? 'ENABLED' : 'DISABLED'}</span>
+            </div>
+            <div className="text-[#94A3B8]">
+              {nextState
+                ? 'Cathode tube power surge triggered. Phosphor curvature vignette and warm ambient glow active.'
+                : 'Old TV glow disabled. Flat edge profile active.'}
+            </div>
+          </div>
+        )
+        break
+      }
+
+      case 'crt':
+      case 'scanlines': {
+        const subArg = args[0]?.toLowerCase()
+        let nextState: boolean
+        if (subArg === 'on' || subArg === 'enable' || subArg === '1') {
+          nextState = true
+        } else if (subArg === 'off' || subArg === 'disable' || subArg === '0') {
+          nextState = false
+        } else {
+          nextState = !crtScanlinesEnabled
         }
 
         if (onToggleCrt) {
@@ -257,12 +297,12 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
           <div className="text-xs space-y-1">
             <div className="text-[#10B981] font-bold flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5" />
-              <span>Vintage CRT Glow & Scanlines: {nextState ? 'ENABLED' : 'DISABLED'}</span>
+              <span>CRT Monitor Scanlines & Raster: {nextState ? 'ENABLED' : 'DISABLED'}</span>
             </div>
             <div className="text-[#94A3B8]">
               {nextState
-                ? 'Cathode tube phosphor bloom, curvature vignette, and rolling raster active.'
-                : 'CRT effect bypassed. Rendering sharp digital display.'}
+                ? 'CRT degauss sync triggered. Rolling refresh beam and interleaved scanlines active.'
+                : 'CRT scanlines disabled. Crisp modern rendering active.'}
             </div>
           </div>
         )
@@ -509,7 +549,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
       }
     } else if (e.key === 'Tab') {
       e.preventDefault()
-      const available = ['help', 'theme', 'crt', 'projects', 'skills', 'about', 'radio', 'social', 'contact', 'clear', 'whoami', 'uptime', 'matrix', 'intro']
+      const available = ['help', 'theme', 'tv', 'crt', 'projects', 'skills', 'about', 'radio', 'social', 'contact', 'clear', 'whoami', 'uptime', 'matrix', 'intro']
       const match = available.find((c) => c.startsWith(inputVal.toLowerCase()))
       if (match) {
         soundFx.playClick('tab')
@@ -522,7 +562,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
 
   if (!isOpen) return null
 
-  const quickCommands = ['help', 'theme', 'crt', 'projects', 'skills', 'about', 'radio', 'social', 'contact', 'clear']
+  const quickCommands = ['help', 'theme', 'tv', 'crt', 'projects', 'skills', 'about', 'radio', 'social', 'contact', 'clear']
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-mono">
