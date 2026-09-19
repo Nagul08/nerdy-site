@@ -77,7 +77,7 @@ export const ProjectsSection: React.FC = () => {
       {/* Directory listing summary */}
       <div className="text-xs font-mono text-[#7F849C] mb-4 bg-[#090B12] px-3 py-1.5 rounded border border-[#1E2235] flex items-center justify-between">
         <span>total {filteredProjects.length} directories</span>
-        <span>drwxr-xr-x 2 nagul staff 4096 Sep 19 2026</span>
+        <span>drwxr-xr-x 2 retr0 staff 4096 Sep 19 2026</span>
       </div>
 
       {/* Projects Grid: Styled as Terminal Directory Cards */}

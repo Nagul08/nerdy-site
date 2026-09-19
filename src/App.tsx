@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { TerminalHeader } from './components/TerminalHeader'
 import { HeroSystemInfo } from './components/HeroSystemInfo'
-import { NowPlayingWidget } from './components/NowPlayingWidget'
 import { AboutSection } from './components/AboutSection'
 import { ProjectsSection } from './components/ProjectsSection'
 import { SkillsSection } from './components/SkillsSection'
@@ -117,45 +116,20 @@ export default function App() {
           onOpenTerminal={() => setIsTerminalOpen(true)}
         />
 
-        {/* Now Playing Widget & Quick Terminal Status Banner */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-8">
-            <div className="p-3 bg-[#0A0C14] border border-[#23283E] rounded-sm text-xs text-[#7F849C] flex items-center justify-between font-mono">
-              <div className="flex items-center space-x-2">
-                <span className="text-[#A6E3A1]">systemctl:</span>
-                <span className="text-[#D8DEE9]">portfolio.service loaded (active, running)</span>
-              </div>
-              <div className="hidden sm:flex items-center space-x-3 text-[11px]">
-                <span>memory: 1.2G/16G</span>
-                <span>tasks: 114</span>
-              </div>
+        {/* About Me Section & Systemctl Status Banner */}
+        <div className="space-y-4">
+          <div className="p-3 bg-[#0A0C14] border border-[#23283E] rounded-sm text-xs text-[#7F849C] flex items-center justify-between font-mono">
+            <div className="flex items-center space-x-2">
+              <span className="text-[#A6E3A1]">systemctl:</span>
+              <span className="text-[#D8DEE9]">portfolio.service loaded (active, running)</span>
             </div>
-            
-            {/* About Me Section */}
-            <div className="mt-6">
-              <AboutSection />
+            <div className="hidden sm:flex items-center space-x-3 text-[11px]">
+              <span>memory: 1.2G/16G</span>
+              <span>tasks: 114</span>
             </div>
           </div>
-
-          {/* Music Player & Rice Widget Column */}
-          <div className="lg:col-span-4 space-y-4">
-            <NowPlayingWidget />
-
-            {/* Quick Rice Info Box */}
-            <div className="p-4 bg-[#111420]/95 border border-[#282C3F] rounded-sm text-xs font-mono">
-              <div className="text-[#CBA6F7] font-bold text-xs pb-1.5 mb-2 border-b border-[#1E2235] flex items-center justify-between">
-                <span>RICE SETUP DETAILS</span>
-                <span className="text-[10px] text-[#A6E3A1]">DOTFILES</span>
-              </div>
-              <ul className="space-y-1.5 text-[11px] text-[#7F849C]">
-                <li>• Font: JetBrains Mono 11pt</li>
-                <li>• Colorscheme: Catppuccin Mocha</li>
-                <li>• Window Manager: Hyprland / Win11</li>
-                <li>• Shell: PowerShell + Starship Prompt</li>
-                <li>• Terminal: Windows Terminal / Kitty</li>
-              </ul>
-            </div>
-          </div>
+          
+          <AboutSection />
         </div>
 
         {/* Projects Section */}
