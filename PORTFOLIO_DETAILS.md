@@ -10,7 +10,7 @@ Fill in or replace any of the sections below with your real information. You can
 | :--- | :--- | :--- | :--- |
 | **Display Name / Nickname** | Terminal prompt (`display@portfolio`), header tag, casual greeting | `Nagul` | |
 | **Official Full Name** | Copyright footer (`© 2026 Full Name`), resume, formal education | `Siva Kowsik S` | |
-| **Terminal Username** | Unix username in command line (`username@portfolio:~$`) | `retr0` | |
+| **Terminal Username** | Unix username in command line (`username@portfolio:~$`) | `niko-rax` | |
 | **Title / Subtitle** | Header role (e.g., Computer Science Engineering Student) | `Computer Science Engineering Student` | |
 | **Graduation Year / Tag** | Short header badge (e.g., CSE '26, Class of '26) | `CSE '29` | |
 | **Operating System** | `Windows 11 (Dev Channel)` | |

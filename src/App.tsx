@@ -4,13 +4,14 @@ import { HeroSystemInfo } from './components/HeroSystemInfo'
 import { AboutSection } from './components/AboutSection'
 import { ProjectsSection } from './components/ProjectsSection'
 import { SkillsSection } from './components/SkillsSection'
-import { GitHubSection } from './components/GitHubSection'
+// import { GitHubSection } from './components/GitHubSection' // TODO: Stashed for future heatmap overhaul
 import { SocialSection } from './components/SocialSection'
 import { ContactSection } from './components/ContactSection'
 import { InteractiveTerminalModal } from './components/InteractiveTerminalModal'
 import { CliampPlayer } from './components/CliampPlayer'
 import { MatrixRain } from './components/MatrixRain'
 import { TerminalFooter } from './components/TerminalFooter'
+import { CryptoGlyphIntro } from './components/CryptoGlyphIntro'
 import type { ThemeName } from './types'
 import { soundFx } from './utils/audio'
 
@@ -20,10 +21,13 @@ export default function App() {
   const [currentTheme, setCurrentTheme] = useState<ThemeName>('catppuccin')
   const [crtEnabled, setCrtEnabled] = useState(false)
   const [matrixActive, setMatrixActive] = useState(false)
+  const [showIntro, setShowIntro] = useState(() => {
+    return !sessionStorage.getItem('has_seen_niko_intro')
+  })
 
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ['home', 'audio', 'about', 'projects', 'skills', 'github', 'social', 'contact']
+    const sectionIds = ['home', 'audio', 'about', 'projects', 'skills', 'social', 'contact']
     const observers: IntersectionObserver[] = []
 
     sectionIds.forEach((id) => {
@@ -37,7 +41,7 @@ export default function App() {
               }
             })
           },
-          { threshold: 0.25 }
+          { rootMargin: '-80px 0px -40% 0px', threshold: 0.1 }
         )
         observer.observe(el)
         observers.push(observer)
@@ -68,9 +72,22 @@ export default function App() {
   }, [matrixActive, isTerminalOpen])
 
   const scrollToSection = (sectionId: string) => {
+    if (sectionId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setActiveSection('home')
+      return
+    }
     const target = document.getElementById(sectionId)
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth' })
+      const header = document.querySelector('header')
+      const headerHeight = header ? header.offsetHeight : 80
+      const elementPosition = target.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.scrollY - headerHeight - 16
+      window.scrollTo({
+        top: Math.max(0, offsetPosition),
+        behavior: 'smooth',
+      })
+      setActiveSection(sectionId)
     }
   }
 
@@ -97,6 +114,12 @@ export default function App() {
       {/* Matrix Rain Effect when toggled */}
       <MatrixRain isActive={matrixActive} onClose={() => setMatrixActive(false)} />
 
+      {/* Crypto Glyph Opening Screen (retr0.blog inspiration) */}
+      <CryptoGlyphIntro
+        isOpen={showIntro}
+        onClose={() => setShowIntro(false)}
+      />
+
       {/* Top Terminal Header with Navigation and System Controls */}
       <TerminalHeader
         activeSection={activeSection}
@@ -107,6 +130,7 @@ export default function App() {
         crtEnabled={crtEnabled}
         onToggleCrt={() => setCrtEnabled((prev) => !prev)}
         onToggleMatrix={() => setMatrixActive((prev) => !prev)}
+        onReplayIntro={() => setShowIntro(true)}
       />
 
       {/* Main Content Area */}
@@ -118,7 +142,7 @@ export default function App() {
         />
 
         {/* CLiAMP Retro Audio Player (Icecast/Shoutcast Online Radio) */}
-        <section id="audio" className="scroll-mt-24 space-y-2">
+        <section id="audio" className="scroll-mt-28 space-y-2">
           <div className="flex items-center justify-between text-xs text-[#7F849C] px-1 font-mono">
             <div className="flex items-center space-x-2">
               <span className="text-[#CBA6F7]">01.5 //</span>
@@ -130,7 +154,7 @@ export default function App() {
         </section>
 
         {/* About Me Section & Systemctl Status Banner */}
-        <div className="space-y-4">
+        <section id="about" className="scroll-mt-28 space-y-4">
           <div className="p-3 bg-[#0A0C14] border border-[#23283E] rounded-sm text-xs text-[#7F849C] flex items-center justify-between font-mono">
             <div className="flex items-center space-x-2">
               <span className="text-[#A6E3A1]">systemctl:</span>
@@ -143,7 +167,7 @@ export default function App() {
           </div>
           
           <AboutSection />
-        </div>
+        </section>
 
         {/* Projects Section */}
         <ProjectsSection />
@@ -151,8 +175,8 @@ export default function App() {
         {/* Skills Section */}
         <SkillsSection />
 
-        {/* GitHub Section */}
-        <GitHubSection />
+        {/* GitHub Section - TODO: Stashed for future heatmap overhaul */}
+        {/* <GitHubSection /> */}
 
         {/* Social Links Section */}
         <SocialSection />
@@ -171,6 +195,7 @@ export default function App() {
         onNavigate={scrollToSection}
         onToggleMatrix={() => setMatrixActive((prev) => !prev)}
         onChangeTheme={setCurrentTheme}
+        onReplayIntro={() => setShowIntro(true)}
       />
     </div>
   )

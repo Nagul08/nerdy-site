@@ -20,7 +20,7 @@ export const AboutSection: React.FC = () => {
   const lines = currentFileData.content.split('\n')
 
   return (
-    <section id="about" className="py-8 scroll-mt-20">
+    <div className="pb-4">
       {/* Section Terminal Command Title */}
       <div className="flex items-center space-x-2 font-mono text-sm sm:text-base text-[#8BE9FD] mb-3">
         <span className="text-[#CBA6F7]">visitor@portfolio:~$</span>
@@ -162,6 +162,6 @@ export const AboutSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

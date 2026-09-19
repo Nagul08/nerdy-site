@@ -4,7 +4,7 @@ export const SYSTEM_INFO = {
   officialName: 'Siva Kowsik S',
   nickname: 'Nagul',
   user: 'Siva Kowsik S',
-  username: 'retr0',
+  username: 'niko-rax',
   host: 'portfolio',
   title: 'Computer Science Engineering Student',
   status: 'ONLINE',
@@ -16,7 +16,7 @@ export const SYSTEM_INFO = {
     { label: 'Shell', value: 'PowerShell 7.4 / zsh 5.9', icon: 'Code2' },
     { label: 'Editor', value: 'VS Code + Neovim (NvChad)', icon: 'FileCode' },
     { label: 'Uptime', value: 'Building cool stuff since 2008', icon: 'Clock' },
-    { label: 'Location', value: 'Chennai, India (UTC+5:30)', icon: 'MapPin' },
+    { label: 'Security', value: 'Encrypted TLS 1.3 / Zero-Trust Node', icon: 'Shield' },
     { label: 'Memory', value: '16.0 GiB (7.2 GiB Coffee + RAM)', icon: 'Database' },
   ],
   statuses: [
@@ -49,13 +49,13 @@ export const ASCII_ARTS = {
    (_|     |_)
       |___|
      (_____)
-  [ retr0@workstation ]
+  [ niko-rax@workstation ]
 `,
   cyberRig: `
   .-------------------------------------.
   | [x] ~/workspace/terminal            |
   |-------------------------------------|
-  |  >_ RETR0.DEV                       |
+  |  >_ NIKO-RAX.DEV                    |
   |     ┌──────────────────────────┐    |
   |     │ █   █   █   █   █   █    │    |
   |     │  SYSTEM READY: 100% OK   │    |
@@ -159,16 +159,16 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: 'abc1234',
     message: 'feat(nerdy-site): launch customized terminal dashboard personal portfolio',
-    author: 'retr0 <sivphax08@gmail.com>',
+    author: 'niko-rax <sivphax08@gmail.com>',
     date: 'Just now',
     branch: 'main',
     changes: { added: 1420, removed: 0 },
-    diffSnippet: `+  export default function App() {\n+    return <TerminalDashboard config="Nagul08/nerdy-site" user="retr0" />;\n+  }`,
+    diffSnippet: `+  export default function App() {\n+    return <TerminalDashboard config="Nagul08/nerdy-site" user="niko-rax" />;\n+  }`,
   },
   {
     hash: '91fa221',
     message: 'refactor(terminal): optimize command parser and auto-suggestion trie',
-    author: 'retr0 <sivphax08@gmail.com>',
+    author: 'niko-rax <sivphax08@gmail.com>',
     date: '1 day ago',
     branch: 'main',
     changes: { added: 84, removed: 35 },
@@ -177,7 +177,7 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: '72bc981',
     message: 'perf(security): audit packet handling and secure transmission endpoints',
-    author: 'retr0 <sivphax08@gmail.com>',
+    author: 'niko-rax <sivphax08@gmail.com>',
     date: '3 days ago',
     branch: 'main',
     changes: { added: 115, removed: 29 },
@@ -186,7 +186,7 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: '6c10e42',
     message: 'init(repo): initialize nerdy-site workspace with Vite + React 19',
-    author: 'retr0 <sivphax08@gmail.com>',
+    author: 'niko-rax <sivphax08@gmail.com>',
     date: '1 week ago',
     branch: 'main',
     changes: { added: 340, removed: 0 },
@@ -274,7 +274,7 @@ When I'm not writing code, you'll find me cranking my Linux
 development setup, surfing cyber security sites, testing new
 developer tools, or researching how operating systems handle
 memory and scheduling behind the scenes or just penetrating (systems).`,
-    meta: '-rw-r--r-- 1 retr0 staff 512B Sep 19 15:51 about.txt',
+    meta: '-rw-r--r-- 1 niko-rax staff 512B Sep 19 15:51 about.txt',
   },
   {
     file: 'education.json',
@@ -294,7 +294,7 @@ memory and scheduling behind the scenes or just penetrating (systems).`,
     "Computer Networks"
   ]
 }`,
-    meta: '-rw-r--r-- 1 retr0 staff 480B Sep 19 15:51 education.json',
+    meta: '-rw-r--r-- 1 niko-rax staff 480B Sep 19 15:51 education.json',
   },
   {
     file: 'philosophy.md',
@@ -305,6 +305,6 @@ memory and scheduling behind the scenes or just penetrating (systems).`,
 2. **Depth over surface:** Inspect the source code, trace network packets, and analyze system calls.
 3. **Keyboard-first Ergonomics:** Speed in thought requires speed in tooling. Monospace fonts, vim keybindings, and automated dotfiles.
 4. **Resilience & Fault Tolerance:** Build defensive systems that anticipate failures and malicious vectors gracefully.`,
-    meta: '-rw-r--r-- 1 retr0 staff 640B Sep 19 15:51 philosophy.md',
+    meta: '-rw-r--r-- 1 niko-rax staff 640B Sep 19 15:51 philosophy.md',
   },
 ]

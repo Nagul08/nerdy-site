@@ -56,7 +56,7 @@ export const GitHubSection: React.FC = () => {
   }
 
   return (
-    <section id="github" className="py-8 scroll-mt-20">
+    <section id="github" className="py-6 sm:py-8 scroll-mt-28">
       {/* Section Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div className="flex items-center space-x-2 font-mono text-sm sm:text-base text-[#8BE9FD]">

@@ -6,7 +6,7 @@ import {
   Code2,
   FileCode,
   Clock,
-  MapPin,
+  Shield,
   Database,
   ArrowRight,
 } from 'lucide-react'
@@ -29,26 +29,25 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
     Code2: <Code2 className="w-3.5 h-3.5 text-[#A6E3A1]" />,
     FileCode: <FileCode className="w-3.5 h-3.5 text-[#FAB387]" />,
     Clock: <Clock className="w-3.5 h-3.5 text-[#F9E2AF]" />,
-    MapPin: <MapPin className="w-3.5 h-3.5 text-[#F38BA8]" />,
+    Shield: <Shield className="w-3.5 h-3.5 text-[#F38BA8]" />,
     Database: <Database className="w-3.5 h-3.5 text-[#F5C2E7]" />,
   }
 
   const handleCopyNeofetch = () => {
     soundFx.playClick('key')
-    const neofetchSummary = `retr0@portfolio
+    const neofetchSummary = `niko-rax@portfolio
 Name: Siva Kowsik S (Nagul)
 OS: Windows 11
 Kernel: Developer Mode / WSL2
 CPU: Computer Science Engineering (Second Year)
-College: Sri Sairam Engineering College
-Location: Chennai, India`
+College: Sri Sairam Engineering College`
     navigator.clipboard.writeText(neofetchSummary)
     setCopyFeedback(true)
     setTimeout(() => setCopyFeedback(false), 2000)
   }
 
   return (
-    <section id="home" className="py-6 sm:py-8">
+    <section id="home" className="py-6 sm:py-8 scroll-mt-28">
       {/* Terminal Window Container */}
       <div className="relative border-2 border-[#23283E] bg-[#111420]/95 rounded-sm shadow-xl shadow-black/40 overflow-hidden">
         {/* MGS2 Tactical Corner Reticle Accents */}
@@ -139,7 +138,7 @@ Location: Chennai, India`
 
                 {/* Tactical Target Indicator */}
                 <div className="absolute top-2.5 left-1/2 -translate-x-1/2 text-[9px] text-[#8BE9FD]/80 font-mono select-none pointer-events-none z-20 tracking-wider">
-                  + [ TARGET: RETR0 ] +
+                  + [ TARGET: NIKO-RAX ] +
                 </div>
 
                 {/* DanteX Image */}
@@ -181,7 +180,7 @@ Location: Chennai, India`
                     <span className="text-[#A6E3A1] font-bold">OPERATOR:</span>
                     <span className="text-[#D8DEE9] font-bold">Siva Kowsik S</span>
                   </span>
-                  <span className="text-[#8BE9FD] font-semibold">CALLSIGN: retr0</span>
+                  <span className="text-[#8BE9FD] font-semibold">CALLSIGN: niko-rax</span>
                 </div>
                 <div className="flex items-center justify-between text-[9px] text-[#585B70]">
                   <span>SOLITON RADAR // CH-140.85</span>
@@ -203,7 +202,7 @@ Location: Chennai, India`
                   </span>
                 </div>
                 <div className="text-xs sm:text-sm font-mono text-[#7F849C] flex items-center gap-2 mt-1">
-                  <span className="text-[#8BE9FD]">retr0</span>
+                  <span className="text-[#8BE9FD]">niko-rax</span>
                   <span>@</span>
                   <span className="text-[#CBA6F7]">portfolio</span>
                   <span>•</span>

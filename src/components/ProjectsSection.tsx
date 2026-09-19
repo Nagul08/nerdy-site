@@ -42,7 +42,7 @@ export const ProjectsSection: React.FC = () => {
   }
 
   return (
-    <section id="projects" className="py-8 scroll-mt-20">
+    <section id="projects" className="py-6 sm:py-8 scroll-mt-28">
       {/* Title with command prompt */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center space-x-2 font-mono text-sm sm:text-base text-[#8BE9FD]">
@@ -86,7 +86,7 @@ export const ProjectsSection: React.FC = () => {
           <span className="text-[#A6E3A1] font-mono text-[10px] bg-[#0D151F] px-1.5 py-0.5 rounded border border-[#A6E3A1]/30">
             140.85 MHz
           </span>
-          <span className="text-[#585B70] hidden md:inline">drwxr-xr-x 2 retr0</span>
+          <span className="text-[#585B70] hidden md:inline">drwxr-xr-x 2 niko-rax</span>
         </div>
       </div>
 

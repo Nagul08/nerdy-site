@@ -29,7 +29,7 @@ export const SocialSection: React.FC = () => {
   }
 
   return (
-    <section id="social" className="py-8 scroll-mt-20">
+    <section id="social" className="py-6 sm:py-8 scroll-mt-28">
       {/* Title */}
       <div className="flex items-center space-x-2 font-mono text-sm sm:text-base text-[#8BE9FD] mb-3">
         <span className="text-[#CBA6F7]">visitor@portfolio:~$</span>

@@ -15,6 +15,7 @@ interface InteractiveTerminalModalProps {
   onNavigate: (section: string) => void
   onToggleMatrix: () => void
   onChangeTheme: (theme: ThemeName) => void
+  onReplayIntro?: () => void
 }
 
 interface LogEntry {
@@ -30,6 +31,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
   onNavigate,
   onToggleMatrix,
   onChangeTheme,
+  onReplayIntro,
 }) => {
   const [inputVal, setInputVal] = useState('')
   const [history, setHistory] = useState<string[]>([])
@@ -188,14 +190,13 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
       case 'github':
         responseNode = (
           <div className="text-xs space-y-1">
-            <div className="text-[#8BE9FD]">&gt; git log --oneline -n 3:</div>
-            <div className="text-[#F9E2AF]">abc1234 feat(nerdy-site): launch customized terminal portfolio</div>
-            <div className="text-[#F9E2AF]">91fa221 refactor(terminal): optimize command parser</div>
-            <div className="text-[#F9E2AF]">72bc981 perf(cache): achieve O(1) LRU eviction</div>
-            <div className="text-[#A6E3A1] pt-1">&gt; Navigating to #github...</div>
+            <div className="text-[#8BE9FD]">&gt; GitHub Account:</div>
+            <div className="text-[#D8DEE9]">
+              Profile: <a href="https://github.com/Nagul08" target="_blank" rel="noopener noreferrer" className="text-[#A6E3A1] hover:underline">https://github.com/Nagul08</a>
+            </div>
+            <div className="text-[#7F849C] pt-1 text-[11px]">[TODO: Interactive contribution heatmap upgrade scheduled for next release]</div>
           </div>
         )
-        onNavigate('github')
         break
 
       case 'social':
@@ -247,6 +248,22 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
             [✓] Matrix digital rain effect toggled!
           </div>
         )
+        break
+
+      case 'intro':
+      case 'reboot':
+      case 'cipher':
+        if (onReplayIntro) {
+          responseNode = (
+            <div className="text-xs text-[#8BE9FD]">
+              [✓] Launching crypto glyph opening cipher sequence...
+            </div>
+          )
+          setTimeout(() => {
+            onClose()
+            onReplayIntro()
+          }, 400)
+        }
         break
 
       case 'theme':
@@ -386,7 +403,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
     )
   }
 
-  const quickCommands = ['help', 'cliamp', 'about', 'projects', 'skills', 'github', 'contact', 'matrix', 'clear']
+  const quickCommands = ['help', 'cliamp', 'about', 'projects', 'skills', 'contact', 'intro', 'matrix', 'clear']
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
@@ -445,7 +462,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
             />
             <span className="text-[#8BE9FD] font-semibold ml-2 flex items-center gap-1.5">
               <TerminalIcon className="w-3.5 h-3.5" />
-              <span>visitor@retr0: ~ (zsh / interactive)</span>
+              <span>visitor@niko-rax: ~ (zsh / interactive)</span>
             </span>
           </div>
 
@@ -494,7 +511,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
             <div key={log.id} className="space-y-1">
               {log.command && (
                 <div className="flex items-center space-x-2 text-[#7F849C]">
-                  <span className="text-[#A6E3A1]">visitor@retr0:~$</span>
+                  <span className="text-[#A6E3A1]">visitor@niko-rax:~$</span>
                   <span className="text-[#D8DEE9] font-medium">{log.command}</span>
                 </div>
               )}
@@ -508,7 +525,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
         {/* Terminal Input Line */}
         <div className="bg-[#111420] p-3 border-t border-[#282C3F] flex items-center space-x-2">
           <span className="text-[#A6E3A1] text-xs font-bold shrink-0">
-            visitor@retr0:~$
+            visitor@niko-rax:~$
           </span>
           <input
             ref={inputRef}

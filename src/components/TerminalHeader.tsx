@@ -12,6 +12,7 @@ interface TerminalHeaderProps {
   crtEnabled: boolean
   onToggleCrt: () => void
   onToggleMatrix: () => void
+  onReplayIntro?: () => void
 }
 
 export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
@@ -23,6 +24,7 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
   crtEnabled,
   onToggleCrt,
   onToggleMatrix,
+  onReplayIntro,
 }) => {
   const [isMuted, setIsMuted] = useState(soundFx.getMuted())
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -51,15 +53,17 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
     { id: 'about', command: '~/about' },
     { id: 'projects', command: '~/projects' },
     { id: 'skills', command: '~/skills' },
-    { id: 'github', command: '~/github' },
+    // TODO (Future): { id: 'github', command: '~/github' } - Stashed for future heatmap overhaul
     { id: 'social', command: '~/social' },
     { id: 'contact', command: '~/contact' },
   ]
 
   const handleNavClick = (id: string) => {
     soundFx.playClick('key')
-    onNavigate(id)
     setMobileMenuOpen(false)
+    setTimeout(() => {
+      onNavigate(id)
+    }, 20)
   }
 
   const handleToggleMute = () => {
@@ -95,7 +99,7 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             <span className="text-[#8BE9FD] font-mono text-[10px] bg-[#0E1524] px-1.5 py-0.2 rounded border border-[#8BE9FD]/30 hidden sm:inline-block">
               CODEC 140.85 MHz
             </span>
-            <span className="text-[#585B70] hidden md:inline">| 24ms (chennai-in)</span>
+            <span className="text-[#585B70] hidden md:inline">| 24ms (RTT)</span>
             <span className="text-[#585B70] hidden lg:inline">| SECURE CIPHER</span>
           </div>
         </div>
@@ -139,6 +143,21 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             <span className="hidden md:inline">MATRIX</span>
           </button>
 
+          {/* Replay Crypto Glyph Intro */}
+          {onReplayIntro && (
+            <button
+              onClick={() => {
+                soundFx.playClick('enter')
+                onReplayIntro()
+              }}
+              className="flex items-center space-x-1 text-[#8BE9FD]/90 hover:text-[#8BE9FD] hover:bg-[#8BE9FD]/10 transition-colors cursor-pointer px-1.5 py-0.5 rounded border border-[#8BE9FD]/30"
+              title="Replay Crypto Glyph Cipher Opening Screen"
+            >
+              <span className="text-[#8BE9FD] font-mono text-[10px]">&lt;/&gt;</span>
+              <span className="hidden sm:inline text-[10px] font-bold">CIPHER</span>
+            </button>
+          )}
+
           {/* Clock */}
           <span className="text-[#89B4FA] tabular-nums font-mono pl-1 border-l border-[#23283E]">
             {currentTime}
@@ -154,7 +173,7 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             <div className="border border-[#313754] bg-[#111420] px-3 py-1.5 rounded-sm font-mono shadow-sm">
               <div className="text-[11px] text-[#7F849C] flex items-center gap-1.5 mb-0.5">
                 <span>┌─[</span>
-                <span className="text-[#8BE9FD] font-medium">retr0@portfolio</span>
+                <span className="text-[#8BE9FD] font-medium">niko-rax@portfolio</span>
                 <span>]──────────────────────────────┐</span>
               </div>
               <div className="pl-3 py-0.5 border-l-2 border-[#8BE9FD]/50 my-1">

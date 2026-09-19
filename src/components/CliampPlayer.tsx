@@ -25,6 +25,7 @@ export interface RadioStation {
   url: string
   bitrate: string
   description: string
+  freq: string
 }
 
 export const RADIO_STATIONS: RadioStation[] = [
@@ -35,6 +36,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     url: 'https://radio.cliamp.stream/lofi/stream',
     bitrate: '128 kbps',
     description: 'Official CLIAMP stream • Chill lofi beats to hack/code to',
+    freq: '140.85 MHz',
   },
   {
     id: 'cliamp-synthwave',
@@ -43,6 +45,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     url: 'https://radio.cliamp.stream/synthwave/stream',
     bitrate: '128 kbps',
     description: 'Official CLIAMP stream • Neon retrowave & nostalgic synth drives',
+    freq: '141.12 MHz',
   },
   {
     id: 'cliamp-edm',
@@ -51,6 +54,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     url: 'https://radio.cliamp.stream/edm/stream',
     bitrate: '128 kbps',
     description: 'Official CLIAMP stream • High-energy electronic & bass frequencies',
+    freq: '142.33 MHz',
   },
   {
     id: 'nightwave-plaza',
@@ -59,14 +63,7 @@ export const RADIO_STATIONS: RadioStation[] = [
     url: 'https://radio.plaza.one/mp3',
     bitrate: '128 kbps',
     description: 'Aesthetic vaporwave, mallsoft, and nostalgic soundscapes 24/7',
-  },
-  {
-    id: 'somafm-defcon',
-    name: 'SomaFM // DEF CON Radio',
-    genre: 'Cyberpunk / Hacker Ambient',
-    url: 'https://ice1.somafm.com/defcon-128-mp3',
-    bitrate: '128 kbps',
-    description: 'Music for hackers and cyber security geeks from DEF CON conference',
+    freq: '143.75 MHz',
   },
 ]
 
@@ -198,6 +195,59 @@ export const CliampPlayer: React.FC = () => {
     }
     return () => clearInterval(timer)
   }, [isPlaying])
+
+  // MGS2 Tactical Volume HUD Controller (Mouse Wheel & Pointer Drag)
+  const [isDraggingVolume, setIsDraggingVolume] = useState(false)
+  const volumeContainerRef = useRef<HTMLDivElement>(null)
+
+  const updateVolumeFromPointer = (clientX: number) => {
+    if (!volumeContainerRef.current) return
+    const rect = volumeContainerRef.current.getBoundingClientRect()
+    const pct = Math.round(((clientX - rect.left) / rect.width) * 100)
+    const clamped = Math.max(0, Math.min(100, pct))
+    setVolume(clamped)
+    if (isMuted) setIsMuted(false)
+  }
+
+  // Pointer dragging handler across document
+  useEffect(() => {
+    if (!isDraggingVolume) return
+    const onMouseMove = (e: MouseEvent) => {
+      updateVolumeFromPointer(e.clientX)
+    }
+    const onMouseUp = () => {
+      setIsDraggingVolume(false)
+    }
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+    }
+  }, [isDraggingVolume, isMuted])
+
+  // Native wheel event with passive: false to prevent background page scroll while scrolling volume
+  useEffect(() => {
+    const el = volumeContainerRef.current
+    if (!el) return
+
+    const handleNativeWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      const delta = e.deltaY < 0 ? 5 : -5
+      setVolume((prev) => {
+        const next = Math.max(0, Math.min(100, prev + delta))
+        return next
+      })
+      setIsMuted(false)
+      soundFx.playClick('key')
+    }
+
+    el.addEventListener('wheel', handleNativeWheel, { passive: false })
+    return () => {
+      el.removeEventListener('wheel', handleNativeWheel)
+    }
+  }, [])
 
   // Setup Web Audio Analyser when stream begins
   const initWebAudio = () => {
@@ -449,6 +499,7 @@ export const CliampPlayer: React.FC = () => {
       url: customUrlInput.trim(),
       bitrate: 'Live Stream',
       description: customUrlInput.trim(),
+      freq: '145.00 MHz',
     }
 
     RADIO_STATIONS.push(newStation)
@@ -482,55 +533,58 @@ export const CliampPlayer: React.FC = () => {
         ──┘
       </span>
 
-      {/* Title Bar (Classic Winamp / CLiAMP Style with MGS2 Codec accent) */}
-      <div className="bg-gradient-to-r from-[#1E2235] via-[#2A2E45] to-[#1E2235] px-3 py-1.5 border-b border-[#282C3F] flex items-center justify-between select-none">
+      {/* Title Bar (MGS2 Codec Receiver Style) */}
+      <div className="bg-[#090C15] px-3 py-2 border-b border-[#23283E] flex items-center justify-between select-none relative overflow-hidden">
         <div className="flex items-center space-x-2 text-xs">
-          <Radio className="w-3.5 h-3.5 text-[#CBA6F7] animate-pulse" />
-          <span className="font-bold text-[#F5C2E7] tracking-wider">
-            CLiAMP v2.95 // TERMINAL RADIO
+          <Radio className="w-3.5 h-3.5 text-[#8BE9FD] animate-pulse" />
+          <span className="font-bold text-[#8BE9FD] tracking-wider">
+            MGS2 CODEC RX
           </span>
-          <span className="hidden sm:inline-block text-[10px] text-[#A6E3A1] bg-[#162024] px-1.5 py-0.2 rounded border border-[#A6E3A1]/30">
-            CODEC 140.85 MHz
+          <span className="text-[#CBA6F7] text-[10px] hidden sm:inline-block">
+            // FREQ: {currentStation.freq}
+          </span>
+          <span className="hidden md:inline-block text-[9px] text-[#A6E3A1] bg-[#0E1B1B] px-1.5 py-0.5 rounded border border-[#A6E3A1]/30 font-mono">
+            BURST LINK: OPTIMAL
           </span>
         </div>
 
         {/* Window control buttons */}
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-1.5 text-[10px] font-mono">
           <button
             onClick={() => {
               soundFx.playClick('key')
               setShowEqualizer(!showEqualizer)
             }}
-            className={`px-1.5 py-0.5 text-[10px] rounded border cursor-pointer ${
+            className={`px-2 py-0.5 rounded border cursor-pointer transition-colors ${
               showEqualizer
-                ? 'bg-[#CBA6F7] text-[#111420] border-[#CBA6F7] font-bold'
-                : 'bg-[#181B28] text-[#7F849C] border-[#282C3F] hover:text-[#D8DEE9]'
+                ? 'bg-[#CBA6F7] text-[#0A0C14] border-[#CBA6F7] font-bold shadow-[0_0_6px_#CBA6F7]'
+                : 'bg-[#121524] text-[#7F849C] border-[#282C3F] hover:text-[#D8DEE9]'
             }`}
             title="Toggle Graphic Equalizer"
           >
-            EQ
+            [EQ]
           </button>
           <button
             onClick={() => {
               soundFx.playClick('key')
               setShowStationsList(!showStationsList)
             }}
-            className={`px-1.5 py-0.5 text-[10px] rounded border cursor-pointer ${
+            className={`px-2 py-0.5 rounded border cursor-pointer transition-colors ${
               showStationsList
-                ? 'bg-[#8BE9FD] text-[#111420] border-[#8BE9FD] font-bold'
-                : 'bg-[#181B28] text-[#7F849C] border-[#282C3F] hover:text-[#D8DEE9]'
+                ? 'bg-[#8BE9FD] text-[#0A0C14] border-[#8BE9FD] font-bold shadow-[0_0_6px_#8BE9FD]'
+                : 'bg-[#121524] text-[#7F849C] border-[#282C3F] hover:text-[#D8DEE9]'
             }`}
-            title="Toggle Station List"
+            title="Toggle Frequency Memory Presets"
           >
-            PL
+            [MEM]
           </button>
           <button
             onClick={() => {
               soundFx.playClick('key')
               setIsMinimized(!isMinimized)
             }}
-            className="p-1 text-[#7F849C] hover:text-[#D8DEE9] hover:bg-[#1F2438] rounded cursor-pointer"
-            title={isMinimized ? 'Expand' : 'Minimize'}
+            className="p-1 text-[#7F849C] hover:text-[#8BE9FD] hover:bg-[#1C2034] rounded border border-transparent hover:border-[#282C3F] cursor-pointer"
+            title={isMinimized ? 'Expand Codec' : 'Minimize Codec'}
           >
             {isMinimized ? (
               <Maximize2 className="w-3 h-3" />
@@ -542,48 +596,76 @@ export const CliampPlayer: React.FC = () => {
       </div>
 
       {/* Main Player Faceplate */}
-      <div className="p-3 sm:p-4 bg-[#111422] space-y-3">
-        {/* LCD / VFD Display Box */}
-        <div className="p-2.5 bg-[#08090E] border border-[#23283E] rounded shadow-inner flex flex-col gap-2 relative overflow-hidden">
-          {/* Top readout: Digital Clock + Status Badges */}
-          <div className="flex items-center justify-between text-xs">
-            {/* 7-Segment style Green LED Timer */}
-            <div className="flex items-center space-x-2">
-              <div className="bg-[#040608] px-2 py-0.5 rounded border border-[#1B2A1E] font-mono font-bold tracking-widest text-base text-[#A6E3A1] shadow-[inset_0_0_8px_rgba(166,227,161,0.2)]">
+      <div className="p-3 sm:p-4 bg-[#0F121F] space-y-3">
+        {/* LCD / Codec Display Box */}
+        <div className="p-2.5 bg-[#060810] border border-[#1E2538] rounded shadow-inner flex flex-col gap-2 relative overflow-hidden">
+          {/* Tactical Crosshair Reticles in Corners */}
+          <span className="absolute top-1 left-1 text-[#8BE9FD]/50 text-[10px] font-mono select-none pointer-events-none">+</span>
+          <span className="absolute top-1 right-1 text-[#8BE9FD]/50 text-[10px] font-mono select-none pointer-events-none">+</span>
+          <span className="absolute bottom-1 left-1 text-[#8BE9FD]/50 text-[10px] font-mono select-none pointer-events-none">+</span>
+          <span className="absolute bottom-1 right-1 text-[#8BE9FD]/50 text-[10px] font-mono select-none pointer-events-none">+</span>
+
+          {/* Top readout: Digital Clock + Telemetry + Format Badges */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            {/* 7-Segment style Green LED Timer & Frequency dial */}
+            <div className="flex items-center space-x-2.5">
+              <div className="bg-[#030606] px-2.5 py-0.5 rounded border border-[#162E20] font-mono font-bold tracking-widest text-base text-[#A6E3A1] shadow-[inset_0_0_8px_rgba(166,227,161,0.25)] drop-shadow-[0_0_4px_rgba(166,227,161,0.4)]">
                 {formatTimer(elapsedSeconds)}
               </div>
-              <div className="text-[10px] text-[#7F849C] flex flex-col leading-tight">
-                <span className={isPlaying ? 'text-[#A6E3A1] font-bold' : 'text-[#585B70]'}>
-                  {isLoading ? 'BUFFERING' : isPlaying ? '● LIVE' : '○ READY'}
-                </span>
-                <span className="text-[#8BE9FD]">{currentStation.bitrate}</span>
+              <div className="text-[10px] font-mono flex flex-col leading-tight">
+                <div className="flex items-center space-x-1.5">
+                  <span className="text-[#8BE9FD] font-bold">RX: {currentStation.freq}</span>
+                  <span className="text-[#585B70]">|</span>
+                  <span className={isPlaying ? 'text-[#A6E3A1] font-bold' : 'text-[#585B70]'}>
+                    {isLoading ? 'HANDSHAKE...' : isPlaying ? '● BURST LINK' : '○ STANDBY'}
+                  </span>
+                </div>
+                {/* S-Meter Signal Strength Bar */}
+                <div className="flex items-center space-x-1.5 text-[9px] text-[#7F849C] mt-0.5">
+                  <span className="text-[#8BE9FD]">S-MTR:</span>
+                  <div className="flex gap-[1px]">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`w-1.5 h-1.5 rounded-[1px] ${
+                          isPlaying
+                            ? i < 7
+                              ? 'bg-[#A6E3A1] shadow-[0_0_2px_#A6E3A1]'
+                              : 'bg-[#F9E2AF]'
+                            : 'bg-[#15231B]'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[#A6E3A1]">99.4%</span>
+                </div>
               </div>
             </div>
 
             {/* Audio format indicators & Overload Clip Warning */}
             <div className="flex items-center space-x-1.5 text-[10px]">
               {isOverload && (
-                <span className="px-1.5 py-0.5 rounded bg-[#F38BA8] text-[#111420] font-bold animate-pulse">
+                <span className="px-1.5 py-0.5 rounded bg-[#F38BA8] text-[#111420] font-bold animate-pulse shadow-[0_0_6px_#F38BA8]">
                   CLIP
                 </span>
               )}
-              <span className="px-1 py-0.5 rounded bg-[#1A1E30] text-[#CBA6F7] border border-[#2B314F]">
+              <span className="px-1.5 py-0.5 rounded bg-[#0E1524] text-[#CBA6F7] border border-[#232E48]">
                 44.1 kHz
               </span>
-              <span className="px-1 py-0.5 rounded bg-[#1A1E30] text-[#F9E2AF] border border-[#2B314F]">
+              <span className="px-1.5 py-0.5 rounded bg-[#0E1524] text-[#F9E2AF] border border-[#232E48]">
                 STEREO
               </span>
-              <span className="hidden sm:inline-block px-1 py-0.5 rounded bg-[#1A1E30] text-[#A6E3A1] border border-[#2B314F]">
-                ICE/SHOUT
+              <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-[#0E1B1B] text-[#A6E3A1] border border-[#1D3528]">
+                CIPHER: S-1002
               </span>
             </div>
           </div>
 
           {/* Scrolling Marquee LCD Text */}
-          <div className="bg-[#05070C] px-2 py-1.5 rounded border border-[#1A1E30] overflow-hidden whitespace-nowrap text-xs text-[#8BE9FD] relative">
+          <div className="bg-[#04060C] px-2.5 py-1.5 rounded border border-[#161C2C] overflow-hidden whitespace-nowrap text-xs text-[#8BE9FD] relative">
             <div className={`inline-block font-mono ${isPlaying ? 'animate-marquee' : ''}`}>
-              ♫ {currentStation.name} • [{currentStation.genre}] • {currentStation.description} •{' '}
-              <span className="text-[#F5C2E7]">CLiAMP: IT REALLY WHIPS THE LLAMA'S ASS!</span> •{' '}
+              ♫ CODEC RX // {currentStation.name} • [{currentStation.genre}] • FREQ: {currentStation.freq} • {currentStation.description} •{' '}
+              <span className="text-[#F5C2E7]">CLIAMP PROTOCOL // BURST AUDIO CIPHER ACTIVE</span> •{' '}
             </div>
           </div>
 
@@ -878,21 +960,26 @@ export const CliampPlayer: React.FC = () => {
         {/* Playback Controls & Volume Rack */}
         {!isMinimized && (
           <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#1C2030]">
-            {/* Transport Buttons */}
+            {/* Tactical MGS2 Transport Buttons */}
             <div className="flex items-center space-x-1.5">
               <button
                 onClick={handlePrev}
-                className="px-2 py-1.5 rounded bg-[#181B28] hover:bg-[#23283E] text-[#D8DEE9] hover:text-[#8BE9FD] border border-[#282C3F] text-xs font-mono transition-colors cursor-pointer"
-                title="Previous Station (Z)"
+                className="px-2.5 py-1.5 rounded bg-[#111422] hover:bg-[#1A2035] text-[#D8DEE9] hover:text-[#8BE9FD] border border-[#232B40] text-xs font-mono transition-colors cursor-pointer flex items-center gap-1"
+                title="Previous Frequency (Z)"
               >
                 <SkipBack className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline text-[10px] font-bold">PREV</span>
               </button>
 
               <button
                 onClick={handleTogglePlay}
                 disabled={isLoading}
-                className="px-3.5 py-1.5 rounded bg-[#CBA6F7]/20 hover:bg-[#CBA6F7]/30 text-[#CBA6F7] border border-[#CBA6F7]/50 text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm shadow-[#CBA6F7]/20"
-                title={isPlaying ? 'Pause Stream (C)' : 'Play Stream (X)'}
+                className={`px-3.5 py-1.5 rounded text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isPlaying
+                    ? 'bg-[#A6E3A1]/20 text-[#A6E3A1] border border-[#A6E3A1]/60 shadow-[0_0_10px_rgba(166,227,161,0.25)]'
+                    : 'bg-[#8BE9FD]/20 hover:bg-[#8BE9FD]/30 text-[#8BE9FD] border border-[#8BE9FD]/50 shadow-sm shadow-[#8BE9FD]/20'
+                }`}
+                title={isPlaying ? 'Hold Transmission (C)' : 'Transmit Frequency (X)'}
               >
                 {isLoading ? (
                   <span className="animate-spin text-xs">◷</span>
@@ -901,86 +988,146 @@ export const CliampPlayer: React.FC = () => {
                 ) : (
                   <Play className="w-3.5 h-3.5" />
                 )}
-                <span>{isLoading ? 'LOADING' : isPlaying ? 'PAUSE' : 'PLAY'}</span>
+                <span>{isLoading ? 'CIPHER...' : isPlaying ? 'HOLD' : 'TRANSMIT'}</span>
               </button>
 
               <button
                 onClick={handleStop}
-                className="px-2.5 py-1.5 rounded bg-[#181B28] hover:bg-[#23283E] text-[#D8DEE9] hover:text-[#F38BA8] border border-[#282C3F] text-xs font-mono transition-colors cursor-pointer"
-                title="Stop Stream (V)"
+                className="px-2.5 py-1.5 rounded bg-[#111422] hover:bg-[#1A2035] text-[#D8DEE9] hover:text-[#F38BA8] border border-[#232B40] text-xs font-mono transition-colors cursor-pointer flex items-center gap-1"
+                title="Abort Transmission (V)"
               >
                 <Square className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline text-[10px]">ABORT</span>
               </button>
 
               <button
                 onClick={handleNext}
-                className="px-2 py-1.5 rounded bg-[#181B28] hover:bg-[#23283E] text-[#D8DEE9] hover:text-[#8BE9FD] border border-[#282C3F] text-xs font-mono transition-colors cursor-pointer"
-                title="Next Station (B)"
+                className="px-2.5 py-1.5 rounded bg-[#111422] hover:bg-[#1A2035] text-[#D8DEE9] hover:text-[#8BE9FD] border border-[#232B40] text-xs font-mono transition-colors cursor-pointer flex items-center gap-1"
+                title="Next Frequency (B)"
               >
+                <span className="hidden sm:inline text-[10px] font-bold">NEXT</span>
                 <SkipForward className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            {/* Quick Station Name Badge */}
-            <div className="text-[11px] text-[#7F849C] truncate max-w-[200px] hidden md:block">
-              Station: <span className="text-[#D8DEE9]">{currentStation.name.split('//')[1] || currentStation.name}</span>
+            {/* Quick Preset Badge */}
+            <div className="text-[11px] text-[#7F849C] truncate max-w-[200px] hidden md:flex items-center gap-1.5 font-mono">
+              <span className="text-[#8BE9FD] text-[10px] bg-[#0E1524] px-1.5 py-0.5 rounded border border-[#232E48]">
+                CH 0{stationIndex + 1}
+              </span>
+              <span className="text-[#D8DEE9] truncate">{currentStation.name.split('//')[1]?.trim() || currentStation.name}</span>
             </div>
 
-            {/* Volume Control */}
-            <div className="flex items-center space-x-2 text-xs text-[#7F849C] w-full sm:w-auto justify-end">
+            {/* Tactical MGS2 Volume HUD Rack with Mouse Wheel & Pointer Scrub */}
+            <div
+              className="flex items-center space-x-2.5 bg-[#090C16] border border-[#1F273B] rounded px-2.5 py-1.5 select-none relative group hover:border-[#8BE9FD]/50 transition-colors"
+              title="Mouse wheel scroll up/down or click & drag to adjust volume"
+            >
+              {/* Mute / Stealth Toggle Button */}
               <button
-                onClick={() => setIsMuted(!isMuted)}
-                className="hover:text-[#D8DEE9] cursor-pointer"
-                title={isMuted ? 'Unmute' : 'Mute'}
+                onClick={() => {
+                  soundFx.playClick('key')
+                  setIsMuted(!isMuted)
+                }}
+                className={`p-1 rounded transition-colors cursor-pointer ${
+                  isMuted || volume === 0
+                    ? 'text-[#F38BA8] hover:bg-[#F38BA8]/20 bg-[#2B1622]'
+                    : 'text-[#A6E3A1] hover:bg-[#A6E3A1]/20 hover:text-[#8BE9FD]'
+                }`}
+                title={isMuted ? 'Unmute Audio' : 'Mute Audio (Silent Mode)'}
               >
                 {isMuted || volume === 0 ? (
-                  <VolumeX className="w-3.5 h-3.5 text-[#F38BA8]" />
+                  <VolumeX className="w-3.5 h-3.5" />
                 ) : (
-                  <Volume2 className="w-3.5 h-3.5 text-[#A6E3A1]" />
+                  <Volume2 className="w-3.5 h-3.5" />
                 )}
               </button>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={isMuted ? 0 : volume}
-                onChange={(e) => {
-                  setVolume(Number(e.target.value))
-                  if (isMuted) setIsMuted(false)
-                }}
-                className="w-20 sm:w-24 accent-[#CBA6F7] cursor-pointer h-1.5 bg-[#1C2030] rounded-lg"
-              />
-              <span className="text-[10px] w-7 text-right font-mono text-[#A6E3A1]">
-                {isMuted ? '0%' : `${volume}%`}
-              </span>
+
+              {/* Volume Ladder & Real-Time Readout */}
+              <div className="flex flex-col gap-0.5">
+                {/* Micro Header: VOL GAIN [WHEEL ⇕] and dB Level */}
+                <div className="flex items-center justify-between text-[9px] font-mono text-[#7F849C] leading-none">
+                  <span className="text-[#8BE9FD] flex items-center gap-1">
+                    <span>VOL GAIN</span>
+                    <span className="text-[#585B70] text-[8px] group-hover:text-[#8BE9FD] transition-colors">[WHEEL ⇕]</span>
+                  </span>
+                  <span className="text-[#A6E3A1] font-mono">
+                    {isMuted || volume === 0
+                      ? '-∞ dB'
+                      : `${(20 * Math.log10(volume / 100)).toFixed(1)} dB`}
+                  </span>
+                </div>
+
+                {/* 20-Segment Tactical LED Ladder Rack */}
+                <div
+                  ref={volumeContainerRef}
+                  onMouseDown={(e) => {
+                    setIsDraggingVolume(true)
+                    updateVolumeFromPointer(e.clientX)
+                    soundFx.playClick('key')
+                  }}
+                  className="h-3.5 w-36 sm:w-44 bg-[#05070E] border border-[#1A2234] rounded-xs p-[2px] flex items-center gap-[2px] cursor-ew-resize relative group-hover:border-[#8BE9FD]/50 transition-colors shadow-inner"
+                >
+                  {Array.from({ length: 20 }).map((_, idx) => {
+                    const stepPct = (idx + 1) * 5
+                    const isLit = !isMuted && volume >= stepPct
+                    const color =
+                      idx >= 17
+                        ? isLit
+                          ? 'bg-[#F38BA8] shadow-[0_0_5px_#F38BA8]'
+                          : 'bg-[#2A1520]'
+                        : idx >= 12
+                        ? isLit
+                          ? 'bg-[#F9E2AF] shadow-[0_0_4px_#F9E2AF]'
+                          : 'bg-[#282416]'
+                        : isLit
+                        ? 'bg-[#8BE9FD] shadow-[0_0_4px_#8BE9FD]'
+                        : 'bg-[#121E2B]'
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`flex-1 h-full rounded-[1px] transition-all duration-75 ${color}`}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Numerical Percentage Display */}
+              <div className="font-mono text-xs text-right w-8">
+                <span className={isMuted || volume === 0 ? 'text-[#F38BA8]' : 'text-[#8BE9FD] font-bold'}>
+                  {isMuted ? 'MUT' : `${volume}%`}
+                </span>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Equalizer Drawer Panel (Classic 10-band) */}
+        {/* Equalizer Drawer Panel (MGS2 10-band DSP) */}
         {showEqualizer && !isMinimized && (
-          <div className="mt-3 pt-3 border-t border-[#1E2235] bg-[#0A0C14] p-3 rounded border border-[#23283E] space-y-2">
-            <div className="flex items-center justify-between text-[11px] text-[#7F849C]">
+          <div className="mt-3 pt-3 border-t border-[#1E2538] bg-[#070912] p-3 rounded border border-[#1F273B] space-y-2">
+            <div className="flex items-center justify-between text-[11px] text-[#7F849C] font-mono">
               <div className="flex items-center space-x-2">
-                <Sliders className="w-3 h-3 text-[#CBA6F7]" />
-                <span className="font-bold text-[#D8DEE9]">10-BAND GRAPHIC EQUALIZER</span>
+                <Sliders className="w-3.5 h-3.5 text-[#CBA6F7]" />
+                <span className="font-bold text-[#D8DEE9]">MGS2 AUDIO FREQ MODULATOR (10-BAND DSP)</span>
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setEqEnabled(!eqEnabled)}
-                  className={`px-2 py-0.5 rounded text-[10px] border cursor-pointer ${
+                  className={`px-2 py-0.5 rounded text-[10px] border cursor-pointer font-mono ${
                     eqEnabled
-                      ? 'bg-[#A6E3A1]/20 text-[#A6E3A1] border-[#A6E3A1]/50'
+                      ? 'bg-[#A6E3A1]/20 text-[#A6E3A1] border-[#A6E3A1]/50 shadow-[0_0_4px_rgba(166,227,161,0.3)]'
                       : 'bg-[#181B28] text-[#585B70] border-[#282C3F]'
                   }`}
                 >
-                  {eqEnabled ? 'EQ ON' : 'EQ BYPASS'}
+                  {eqEnabled ? '[EQ ACTIVE]' : '[EQ BYPASS]'}
                 </button>
                 <button
                   onClick={() => setEqLevels([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])}
-                  className="px-2 py-0.5 rounded text-[10px] bg-[#181B28] text-[#7F849C] border border-[#282C3F] hover:text-[#D8DEE9] cursor-pointer"
+                  className="px-2 py-0.5 rounded text-[10px] bg-[#121624] text-[#7F849C] border border-[#232B40] hover:text-[#D8DEE9] cursor-pointer font-mono"
                 >
-                  FLAT
+                  [FLAT]
                 </button>
               </div>
             </div>
@@ -1000,7 +1147,7 @@ export const CliampPlayer: React.FC = () => {
                         newLevels[i] = Number(e.target.value)
                         setEqLevels(newLevels)
                       }}
-                      className="h-16 w-3 accent-[#8BE9FD] cursor-pointer appearance-none bg-[#141826] rounded-full [writing-mode:vertical-lr] [direction:rtl]"
+                      className="h-16 w-3 accent-[#8BE9FD] cursor-pointer appearance-none bg-[#101422] rounded-full [writing-mode:vertical-lr] [direction:rtl]"
                     />
                   </div>
                   <span className="text-[9px] text-[#7F849C] font-mono truncate w-full text-center">
@@ -1015,17 +1162,17 @@ export const CliampPlayer: React.FC = () => {
           </div>
         )}
 
-        {/* Station Playlist Selector */}
+        {/* Station Frequency Memory Presets Selector */}
         {showStationsList && !isMinimized && (
-          <div className="mt-3 pt-3 border-t border-[#1E2235] bg-[#0A0C14] p-3 rounded border border-[#23283E] space-y-2">
-            <div className="flex items-center justify-between text-[11px] pb-1 border-b border-[#1A1E30]">
-              <span className="font-bold text-[#8BE9FD]">STREAM DIRECTORY (CLICK TO TUNE)</span>
+          <div className="mt-3 pt-3 border-t border-[#1E2538] bg-[#070912] p-3 rounded border border-[#1F273B] space-y-2">
+            <div className="flex items-center justify-between text-[11px] pb-1 border-b border-[#1A2234] font-mono">
+              <span className="font-bold text-[#8BE9FD]">CODEC FREQUENCY MEMORY (CLICK TO TUNE)</span>
               <button
                 onClick={() => setShowCustomInput(!showCustomInput)}
                 className="text-[10px] text-[#CBA6F7] hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <PlusCircle className="w-3 h-3" />
-                <span>Custom Stream</span>
+                <span>+ Custom Stream</span>
               </button>
             </div>
 
@@ -1037,19 +1184,19 @@ export const CliampPlayer: React.FC = () => {
                   placeholder="https://radio.example.com/stream"
                   value={customUrlInput}
                   onChange={(e) => setCustomUrlInput(e.target.value)}
-                  className="flex-1 bg-[#141826] border border-[#282C3F] rounded px-2 py-1 text-xs text-[#D8DEE9] placeholder-[#585B70] focus:border-[#CBA6F7] focus:outline-none"
+                  className="flex-1 bg-[#0E121E] border border-[#232B40] rounded px-2 py-1 text-xs text-[#D8DEE9] placeholder-[#585B70] focus:border-[#8BE9FD] focus:outline-none font-mono"
                   required
                 />
                 <button
                   type="submit"
-                  className="px-2 py-1 rounded bg-[#CBA6F7] text-[#111420] text-xs font-bold hover:bg-[#b088e8] cursor-pointer"
+                  className="px-2.5 py-1 rounded bg-[#8BE9FD] text-[#0A0C14] text-xs font-bold hover:bg-[#a6f0ff] cursor-pointer font-mono"
                 >
                   Tune URL
                 </button>
               </form>
             )}
 
-            {/* List of stations */}
+            {/* List of Codec Preset Stations */}
             <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
               {RADIO_STATIONS.map((st, idx) => {
                 const isCurrent = idx === stationIndex
@@ -1057,24 +1204,27 @@ export const CliampPlayer: React.FC = () => {
                   <div
                     key={st.id}
                     onClick={() => handleSelectStation(idx)}
-                    className={`p-2 rounded text-xs flex items-center justify-between cursor-pointer transition-colors ${
+                    className={`p-2 rounded text-xs flex items-center justify-between cursor-pointer transition-colors font-mono ${
                       isCurrent
-                        ? 'bg-[#1C2237] border border-[#CBA6F7]/40 text-[#F5C2E7]'
-                        : 'bg-[#101320] border border-[#1A1E2E] text-[#7F849C] hover:bg-[#161B2E] hover:text-[#D8DEE9]'
+                        ? 'bg-[#141D30] border border-[#8BE9FD]/50 text-[#8BE9FD] shadow-[0_0_6px_rgba(139,233,253,0.15)]'
+                        : 'bg-[#0A0D18] border border-[#161D2E] text-[#7F849C] hover:bg-[#12172A] hover:text-[#D8DEE9]'
                     }`}
                   >
                     <div className="flex items-center space-x-2 truncate">
-                      <span className="text-[10px] text-[#585B70] font-mono">
-                        {String(idx + 1).padStart(2, '0')}.
+                      <span className="text-[10px] text-[#585B70]">
+                        MEM-0{idx + 1}
+                      </span>
+                      <span className="text-[10px] text-[#8BE9FD] font-bold">
+                        [{st.freq}]
                       </span>
                       <div className="truncate">
-                        <div className="font-bold truncate text-[#D8DEE9]">{st.name}</div>
-                        <div className="text-[10px] text-[#7F849C]">{st.genre}</div>
+                        <span className="font-bold text-[#D8DEE9] mr-2">{st.name}</span>
+                        <span className="text-[10px] text-[#7F849C]">({st.genre})</span>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-2 text-[10px] shrink-0 ml-2">
-                      <span className="text-[#8BE9FD]">{st.bitrate}</span>
+                      <span className="text-[#A6E3A1]">{st.bitrate}</span>
                       {isCurrent && isPlaying && (
                         <span className="text-[#A6E3A1] animate-pulse font-bold">● TUNED</span>
                       )}
@@ -1087,15 +1237,16 @@ export const CliampPlayer: React.FC = () => {
         )}
       </div>
 
-      {/* Retro Footer Status Line */}
-      <div className="px-3 py-1 bg-[#090A12] border-t border-[#1A1E2E] flex items-center justify-between text-[10px] text-[#585B70]">
-        <div className="truncate">
-          SOURCE: <span className="text-[#8BE9FD]">{currentStation.url}</span>
+      {/* MGS2 Telemetry Footer Status Line */}
+      <div className="px-3 py-1.5 bg-[#060810] border-t border-[#182030] flex items-center justify-between text-[10px] text-[#585B70] font-mono select-none">
+        <div className="truncate flex items-center space-x-2">
+          <span className="text-[#8BE9FD]">RX SOURCE:</span>
+          <span className="text-[#D8DEE9] truncate max-w-[280px] sm:max-w-md">{currentStation.url}</span>
         </div>
         <div className="shrink-0 flex items-center space-x-2">
-          <span>BUFF: 512KB</span>
+          <span className="text-[#CBA6F7]">CIPHER: S-1002</span>
           <span>•</span>
-          <span className="text-[#A6E3A1]">PEAKS: ACTIVE</span>
+          <span className="text-[#A6E3A1]">BURST: ACTIVE</span>
         </div>
       </div>
     </div>

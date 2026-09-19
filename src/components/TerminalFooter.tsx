@@ -15,7 +15,7 @@ export const TerminalFooter: React.FC<TerminalFooterProps> = ({ onScrollToTop })
           <span className="bg-[#CBA6F7] text-[#0D0F18] font-bold px-1.5 py-0.2 rounded-xs">
             TMUX 3.4
           </span>
-          <span className="text-[#D8DEE9]">session: [0:retr0*]</span>
+          <span className="text-[#D8DEE9]">session: [0:niko-rax*]</span>
           <span className="text-[#585B70]">|</span>
           <span className="text-[#A6E3A1] flex items-center gap-1">
             <GitBranch className="w-3 h-3" /> main
@@ -52,7 +52,7 @@ export const TerminalFooter: React.FC<TerminalFooterProps> = ({ onScrollToTop })
         </div>
 
         <div className="text-sm sm:text-base font-bold text-[#8BE9FD] flex items-center justify-center gap-2">
-          <span>retr0@portfolio:~$</span>
+          <span>niko-rax@portfolio:~$</span>
           <span className="text-[#F9E2AF]">exit</span>
         </div>
 
