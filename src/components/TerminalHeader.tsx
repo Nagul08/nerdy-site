@@ -1,24 +1,36 @@
 import React, { useState } from 'react'
-import { Menu, X, Terminal } from 'lucide-react'
+import { Menu, X, Terminal, Palette, Tv } from 'lucide-react'
 import { GithubIcon } from './BrandIcons'
 import { soundFx } from '../utils/audio'
 import danteImg from '../assets/danteX.jpg'
+import type { ThemeName } from '../types'
+import { THEMES, THEME_KEYS } from '../utils/themeConfig'
 
 interface TerminalHeaderProps {
   activeSection: string
   onNavigate: (sectionId: string) => void
   onToggleTerminal: () => void
+  currentTheme: ThemeName
+  onChangeTheme: (theme: ThemeName) => void
+  crtEnabled: boolean
+  onToggleCrt: () => void
 }
 
 export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
   activeSection,
   onNavigate,
   onToggleTerminal,
+  currentTheme,
+  onChangeTheme,
+  crtEnabled,
+  onToggleCrt,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false)
 
   const navItems = [
     { id: 'home', label: 'Home' },
+    { id: 'audio', label: 'Radio' },
     { id: 'projects', label: 'Projects' },
     { id: 'skills', label: 'Skills' },
     { id: 'about', label: 'About' },
@@ -33,8 +45,10 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
     }, 20)
   }
 
+  const activeThemeConfig = THEMES[currentTheme] || THEMES.sunset
+
   return (
-    <header className="sticky top-0 z-40 bg-[#08090C]/90 backdrop-blur-md border-b border-[#181B26] text-sm font-mono">
+    <header className="sticky top-0 z-40 bg-[#070911]/85 backdrop-blur-md border-b border-[#181d2e] text-sm font-mono transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* Left: Identity & Callsign */}
         <button
@@ -44,13 +58,16 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
           <img
             src={danteImg}
             alt="Dante Avatar"
-            className="w-6 h-6 rounded-full object-cover border border-[#2B334E] group-hover:border-[#00F0FF] transition-colors"
+            className="w-6 h-6 rounded-full object-cover border border-[#2B334E] group-hover:border-accent transition-colors"
           />
           <div className="flex items-center space-x-1.5">
-            <span className="text-[#F1F5F9] font-bold tracking-tight group-hover:text-[#00F0FF] transition-colors">
+            <span className="text-[#F1F5F9] font-bold tracking-tight group-hover:text-accent transition-colors">
               niko-rax
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
+            <span
+              style={{ backgroundColor: activeThemeConfig.primaryHex }}
+              className="w-1.5 h-1.5 rounded-full animate-pulse"
+            />
           </div>
         </button>
 
@@ -64,24 +81,130 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
                 onClick={() => handleNavClick(item.id)}
                 className={`text-xs transition-colors cursor-pointer flex items-center gap-1.5 py-1 ${
                   isActive
-                    ? 'text-[#00F0FF] font-semibold'
+                    ? 'text-accent font-semibold'
                     : 'text-[#94A3B8] hover:text-[#F1F5F9]'
                 }`}
               >
                 <span>{item.label}</span>
-                {isActive && <span className="w-1 h-1 rounded-full bg-[#00F0FF]" />}
+                {isActive && (
+                  <span
+                    style={{ backgroundColor: activeThemeConfig.primaryHex }}
+                    className="w-1 h-1 rounded-full"
+                  />
+                )}
               </button>
             )
           })}
         </nav>
 
-        {/* Right: Quick Links & CLI Trigger */}
-        <div className="flex items-center space-x-2.5">
+        {/* Right: Theme Selector, CRT Toggle, Quick Links & CLI Trigger */}
+        <div className="flex items-center space-x-2">
+          {/* Wallpaper Theme Dropdown / Quick Switcher */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                soundFx.playClick('tab')
+                setThemeDropdownOpen(!themeDropdownOpen)
+              }}
+              style={{ borderColor: activeThemeConfig.primaryHex + '60' }}
+              className="px-2.5 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] text-[#CBD5E1] hover:text-[#F8FAFC] border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+              title="Switch Background Wallpaper & Accent Theme"
+            >
+              <Palette className="w-3.5 h-3.5" style={{ color: activeThemeConfig.primaryHex }} />
+              <span className="hidden sm:inline">{activeThemeConfig.label}</span>
+            </button>
+
+            {themeDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-[#0c0f1a]/95 backdrop-blur-md border border-[#232a40] rounded-md shadow-2xl p-1.5 z-50 animate-fade-in font-mono text-xs">
+                <div className="text-[10px] text-[#64748B] px-2 py-1 uppercase tracking-wider">
+                  Select Theme / Wallpaper
+                </div>
+                {THEME_KEYS.map((key) => {
+                  const t = THEMES[key]
+                  const isCurrent = currentTheme === key
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        soundFx.playClick('key')
+                        onChangeTheme(key)
+                        setThemeDropdownOpen(false)
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 rounded flex items-center justify-between cursor-pointer transition-colors ${
+                        isCurrent
+                          ? 'bg-[#181d2f] text-[#F8FAFC] font-bold'
+                          : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#121624]'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span
+                          style={{ backgroundColor: t.primaryHex }}
+                          className="w-2.5 h-2.5 rounded-full inline-block"
+                        />
+                        <span>{t.label}</span>
+                      </div>
+                      <span className="text-[10px] text-[#64748B]">{t.wallpaperName}</span>
+                    </button>
+                  )
+                })}
+
+                {/* CRT / Old TV Effect Toggle */}
+                <div className="pt-1.5 mt-1.5 border-t border-[#1e2438]">
+                  <button
+                    onClick={() => {
+                      soundFx.playClick('tab')
+                      onToggleCrt()
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded flex items-center justify-between cursor-pointer hover:bg-[#141828] transition-colors group"
+                    title="Toggle Old Television Cathode-Ray Bloom & Scanlines"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Tv className="w-3.5 h-3.5" style={{ color: activeThemeConfig.primaryHex }} />
+                      <span className="text-[#CBD5E1] group-hover:text-[#F8FAFC]">Old TV Glow</span>
+                    </div>
+                    <span
+                      style={{
+                        borderColor: crtEnabled ? activeThemeConfig.primaryHex : '#2A324B',
+                        color: crtEnabled ? activeThemeConfig.primaryHex : '#64748B',
+                      }}
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                        crtEnabled ? 'bg-accent-soft' : 'bg-[#181D2E]'
+                      }`}
+                    >
+                      {crtEnabled ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Quick 1-Click CRT TV Glow Toggle */}
+          <button
+            onClick={() => {
+              soundFx.playClick('tab')
+              onToggleCrt()
+            }}
+            style={{
+              borderColor: crtEnabled ? activeThemeConfig.primaryHex + '70' : '#232a40',
+              color: crtEnabled ? activeThemeConfig.primaryHex : '#94A3B8',
+            }}
+            className={`px-2 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] border text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+              crtEnabled ? 'bg-accent-soft' : ''
+            }`}
+            title={`Toggle Old TV CRT Filter (${crtEnabled ? 'Active' : 'Disabled'})`}
+          >
+            <Tv className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-semibold">
+              CRT {crtEnabled ? 'ON' : 'OFF'}
+            </span>
+          </button>
+
           <a
             href="https://github.com/Nagul08"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1.5 rounded text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#141722] transition-colors cursor-pointer"
+            className="p-1.5 rounded text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#121624] transition-colors cursor-pointer"
             title="GitHub Profile"
           >
             <GithubIcon className="w-4 h-4" />
@@ -92,12 +215,12 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
               soundFx.playClick('enter')
               onToggleTerminal()
             }}
-            className="px-2.5 py-1 rounded bg-[#131622] hover:bg-[#1C2030] text-[#00F0FF] border border-[#252A3D] hover:border-[#00F0FF]/40 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-2.5 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] text-accent border border-accent-subtle hover:border-accent text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             title="Interactive Terminal Shell (Ctrl + ~)"
           >
             <Terminal className="w-3.5 h-3.5" />
             <span>CLI</span>
-            <kbd className="hidden sm:inline-block text-[10px] text-[#64748B] bg-[#0A0C13] px-1 rounded border border-[#252A3D]">
+            <kbd className="hidden sm:inline-block text-[10px] text-[#64748B] bg-[#07090f] px-1 rounded border border-[#23283c]">
               ~
             </kbd>
           </button>
@@ -108,7 +231,7 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
               soundFx.playClick('tab')
               setMobileMenuOpen(!mobileMenuOpen)
             }}
-            className="md:hidden p-1.5 rounded text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#141722] cursor-pointer"
+            className="md:hidden p-1.5 rounded text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#121624] cursor-pointer"
             aria-label="Toggle Navigation"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -118,20 +241,23 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[#181B26] bg-[#08090C] px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-[#181B26] bg-[#070911]/95 backdrop-blur-md px-4 py-3 space-y-1">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
               className={`w-full text-left px-3 py-2 rounded text-xs transition-colors flex items-center justify-between ${
                 activeSection === item.id
-                  ? 'bg-[#131622] text-[#00F0FF] font-semibold'
-                  : 'text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#131622]'
+                  ? 'bg-[#141828] text-accent font-semibold'
+                  : 'text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#121624]'
               }`}
             >
               <span>{item.label}</span>
               {activeSection === item.id && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF]" />
+                <span
+                  style={{ backgroundColor: activeThemeConfig.primaryHex }}
+                  className="w-1.5 h-1.5 rounded-full"
+                />
               )}
             </button>
           ))}

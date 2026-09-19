@@ -30,16 +30,22 @@ export const SkillsSection: React.FC = () => {
       ],
     },
     {
-      title: 'Web & Frontend',
+      title: 'Web & Full-Stack Engineering',
       icon: <Globe className="w-4 h-4 text-[#10B981]" />,
       accent: 'border-[#10B981]/30 text-[#10B981]',
       skills: [
-        'React 19',
-        'TypeScript',
-        'Tailwind CSS',
-        'JavaScript (ES6+)',
-        'HTML5 / CSS3',
-        'Vite',
+        'React 19 & Next.js',
+        'TypeScript (Strict Mode)',
+        'Node.js & Express APIs',
+        'Tailwind CSS & Glassmorphism',
+        'WebSocket Realtime Streams',
+        'Web Audio API & Synthesizers',
+        'RESTful Services & JSON-RPC',
+        'Vite & Production Bundling',
+        'State Architecture (Zustand)',
+        'HTML5 / CSS3 / DOM APIs',
+        'Responsive UI/UX Ergonomics',
+        'Browser Performance Profiling',
       ],
     },
     {
@@ -61,7 +67,7 @@ export const SkillsSection: React.FC = () => {
     <section id="skills" className="py-8 scroll-mt-20 font-mono">
       {/* Section Header */}
       <div className="mb-6 pb-3 border-b border-[#1C2030]">
-        <div className="text-xs text-[#00F0FF] mb-1">// TECHNICAL PROFICIENCY</div>
+        <div className="text-xs text-accent mb-1">// TECHNICAL PROFICIENCY</div>
         <h2 className="text-2xl font-extrabold text-[#F8FAFC] tracking-tight">
           Skills & Arsenal
         </h2>
@@ -72,7 +78,7 @@ export const SkillsSection: React.FC = () => {
         {categories.map((cat, idx) => (
           <div
             key={idx}
-            className="bg-[#0D0F17] border border-[#1C2030] rounded-lg p-5 shadow-lg shadow-black/20"
+            className="frosted-glass hover:border-accent/40 rounded-xl p-5 transition-all"
           >
             {/* Category Header */}
             <div className="flex items-center space-x-2.5 mb-4 pb-2 border-b border-[#181C2A]">
@@ -85,7 +91,7 @@ export const SkillsSection: React.FC = () => {
               {cat.skills.map((skill, sIdx) => (
                 <span
                   key={sIdx}
-                  className="px-3 py-1.5 rounded-md bg-[#131624] text-xs font-medium text-[#CBD5E1] border border-[#22273C] hover:border-[#00F0FF]/40 hover:text-[#00F0FF] transition-colors cursor-default"
+                  className="px-3 py-1.5 rounded-md bg-[#101422] text-xs font-medium text-[#CBD5E1] border border-[#1f263d] hover:border-accent hover:text-accent transition-colors cursor-default"
                 >
                   {skill}
                 </span>

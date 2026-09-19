@@ -24,7 +24,7 @@ export const ProjectsSection: React.FC = () => {
       {/* Section Header with Category Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-3 border-b border-[#1C2030]">
         <div>
-          <div className="text-xs text-[#00F0FF] mb-1">// WORK & EXPERIMENTS</div>
+          <div className="text-xs text-accent mb-1">// WORK & EXPERIMENTS</div>
           <h2 className="text-2xl font-extrabold text-[#F8FAFC] tracking-tight">
             Featured Projects
           </h2>
@@ -39,10 +39,10 @@ export const ProjectsSection: React.FC = () => {
                 soundFx.playClick('key')
                 setSelectedCategory(cat.id)
               }}
-              className={`px-3 py-1 rounded text-xs transition-colors cursor-pointer whitespace-nowrap font-medium ${
+              className={`px-3 py-1 rounded text-xs transition-all cursor-pointer whitespace-nowrap font-medium ${
                 selectedCategory === cat.id
-                  ? 'bg-[#00F0FF] text-[#08090C] font-bold'
-                  : 'bg-[#131624] text-[#94A3B8] hover:text-[#F1F5F9] border border-[#22273C]'
+                  ? 'bg-accent text-[#08090C] font-bold shadow-md accent-box-glow'
+                  : 'bg-[#101422]/90 text-[#94A3B8] hover:text-[#F1F5F9] border border-[#1f263d]'
               }`}
             >
               {cat.label}
@@ -56,23 +56,23 @@ export const ProjectsSection: React.FC = () => {
         {filteredProjects.map((project) => (
           <div
             key={project.id}
-            className="bg-[#0D0F17] border border-[#1C2030] hover:border-[#00F0FF]/50 rounded-lg p-5 flex flex-col justify-between transition-all duration-200 group hover:-translate-y-1 shadow-lg shadow-black/20"
+            className="frosted-glass hover:border-accent/60 rounded-xl p-5 flex flex-col justify-between transition-all duration-200 group hover:-translate-y-1"
           >
             <div>
               {/* Top: Folder Icon, Title & Category Badge */}
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2 text-base font-bold text-[#F8FAFC] group-hover:text-[#00F0FF] transition-colors">
-                  <Folder className="w-4 h-4 text-[#00F0FF]" />
+                <div className="flex items-center space-x-2 text-base font-bold text-[#F8FAFC] group-hover:text-accent transition-colors">
+                  <Folder className="w-4 h-4 text-accent" />
                   <span>{project.name}</span>
                 </div>
 
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[#141826] text-[#94A3B8] border border-[#252B42] capitalize">
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[#101422] text-[#94A3B8] border border-[#1f263d] capitalize">
                   {project.category}
                 </span>
               </div>
 
               {/* Tagline */}
-              <h3 className="text-xs font-semibold text-[#38BDF8] mb-2 leading-snug">
+              <h3 className="text-xs font-semibold text-accent-sec mb-2 leading-snug">
                 {project.tagline}
               </h3>
 
@@ -86,7 +86,7 @@ export const ProjectsSection: React.FC = () => {
                 {project.tech.map((t, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-0.5 rounded bg-[#131624] text-[#CBD5E1] text-[11px] border border-[#22273C]"
+                    className="px-2 py-0.5 rounded bg-[#101422] text-[#CBD5E1] text-[11px] border border-[#1f263d]"
                   >
                     {t}
                   </span>
@@ -106,7 +106,7 @@ export const ProjectsSection: React.FC = () => {
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-semibold text-[#08090C] bg-[#00F0FF] hover:bg-[#38BDF8] flex items-center gap-1.5 px-3 py-1 rounded transition-colors"
+                    className="text-xs font-semibold text-[#08090C] bg-accent hover:opacity-90 flex items-center gap-1.5 px-3 py-1 rounded transition-colors shadow-sm"
                   >
                     <ExternalLink className="w-3 h-3" />
                     <span>Live Demo</span>
@@ -117,7 +117,7 @@ export const ProjectsSection: React.FC = () => {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-medium text-[#CBD5E1] hover:text-[#00F0FF] bg-[#141724] hover:bg-[#1E2336] border border-[#252A3E] flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors"
+                  className="text-xs font-medium text-[#CBD5E1] hover:text-accent bg-[#101422] hover:bg-[#1a2034] border border-[#1f263d] hover:border-accent flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors"
                 >
                   <GithubIcon className="w-3.5 h-3.5" />
                   <span>Code</span>

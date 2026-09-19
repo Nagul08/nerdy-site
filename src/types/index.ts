@@ -62,4 +62,4 @@ export interface TerminalCommandOutput {
   timestamp: string
 }
 
-export type ThemeName = 'catppuccin' | 'tokyo' | 'cyber' | 'nord' | 'matrix'
+export type ThemeName = 'sunset' | 'dusk' | 'crimson' | 'noir'

@@ -22,13 +22,13 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
 
   return (
     <section id="home" className="pt-6 sm:pt-12 pb-8 scroll-mt-20 font-mono">
-      <div className="bg-[#0D0F17] border border-[#1C2030] rounded-lg p-6 sm:p-10 shadow-xl shadow-black/40">
+      <div className="frosted-glass rounded-2xl p-6 sm:p-10 transition-all duration-300">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           
           {/* Left Column: Clean Dante Avatar */}
           <div className="md:col-span-4 flex flex-col items-center justify-center">
             <div className="relative group">
-              <div className="w-44 h-44 sm:w-52 sm:h-52 rounded-xl overflow-hidden border border-[#2B334E] shadow-2xl bg-[#08090C] transition-all duration-300 group-hover:border-[#00F0FF]/60 group-hover:shadow-[#00F0FF]/10">
+              <div className="w-44 h-44 sm:w-52 sm:h-52 rounded-xl overflow-hidden border border-[#2B334E] shadow-2xl bg-[#08090C] transition-all duration-300 group-hover:border-accent accent-box-glow">
                 <img
                   src={danteImg}
                   alt="Siva Kowsik S (Nagul) Avatar"
@@ -39,7 +39,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
               {/* Discreet operator tag below image */}
               <div className="mt-3 text-center">
                 <span className="text-xs text-[#94A3B8] font-medium tracking-wider">
-                  OPERATOR // <span className="text-[#00F0FF] font-bold">niko-rax</span>
+                  OPERATOR // <span className="text-accent font-bold">niko-rax</span>
                 </span>
               </div>
             </div>
@@ -48,8 +48,8 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
           {/* Right Column: Clean, High-Impact Identity & Statement */}
           <div className="md:col-span-8 flex flex-col justify-center">
             {/* Classification eyebrow */}
-            <div className="flex items-center space-x-2 text-xs text-[#00F0FF] mb-2.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
+            <div className="flex items-center space-x-2 text-xs text-accent mb-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
               <span className="tracking-widest uppercase text-[11px] font-semibold">
                 Systems & Cyber Security Undergrad
               </span>
@@ -63,7 +63,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
               <div className="text-sm text-[#94A3B8] flex flex-wrap items-center gap-2 mt-2">
                 <span className="text-[#FBBF24] font-semibold">(aka "Nagul")</span>
                 <span>•</span>
-                <span className="text-[#00F0FF] font-medium">@niko-rax</span>
+                <span className="text-accent font-medium">@niko-rax</span>
                 <span>•</span>
                 <span className="text-[#10B981] font-medium">Class of 2029</span>
                 <span>•</span>
@@ -74,7 +74,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
             {/* Genuine, Punchy Statement */}
             <p className="text-sm sm:text-base text-[#CBD5E1] leading-relaxed mb-6">
               Second-year Computer Science Engineering student obsessed with{' '}
-              <strong className="text-[#00F0FF] font-semibold">low-level systems programming</strong>,{' '}
+              <strong className="text-accent font-semibold">low-level systems programming</strong>,{' '}
               <strong className="text-[#10B981] font-semibold">Linux internals</strong>,{' '}
               <strong className="text-[#FBBF24] font-semibold">network security</strong>, and building fast,
               aesthetic software. I take things apart down to their fundamentals to understand how they truly work.
@@ -85,7 +85,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
               {coreSkills.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="px-2.5 py-1 rounded bg-[#131624] text-xs text-[#94A3B8] border border-[#22273C] font-medium transition-colors hover:text-[#00F0FF] hover:border-[#00F0FF]/40 cursor-default"
+                  className="px-2.5 py-1 rounded bg-[#101422]/90 text-xs text-[#94A3B8] border border-[#1f263d] font-medium transition-colors hover:text-accent hover:border-accent cursor-default"
                 >
                   {skill}
                 </span>
@@ -99,7 +99,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
                   soundFx.playClick('enter')
                   onNavigate('projects')
                 }}
-                className="px-4 py-2 rounded bg-[#00F0FF] hover:bg-[#38BDF8] text-[#08090C] font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#00F0FF]/15"
+                className="px-4 py-2 rounded bg-accent hover:opacity-90 text-[#08090C] font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg accent-box-glow"
               >
                 <ArrowDown className="w-3.5 h-3.5" />
                 <span>VIEW PROJECTS</span>
@@ -109,7 +109,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
                 href="https://github.com/Nagul08"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-2 rounded bg-[#141724] hover:bg-[#1E2336] text-[#F1F5F9] border border-[#252A3E] hover:border-[#00F0FF]/40 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
+                className="px-3.5 py-2 rounded bg-[#101422]/90 hover:bg-[#181d2f] text-[#F1F5F9] border border-[#1f263d] hover:border-accent text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
               >
                 <GithubIcon className="w-3.5 h-3.5" />
                 <span>GITHUB</span>
@@ -119,7 +119,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
                 href="https://www.linkedin.com/in/siva-kowsik-s-b490b437b/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-2 rounded bg-[#141724] hover:bg-[#1E2336] text-[#F1F5F9] border border-[#252A3E] hover:border-[#00F0FF]/40 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
+                className="px-3.5 py-2 rounded bg-[#101422]/90 hover:bg-[#181d2f] text-[#F1F5F9] border border-[#1f263d] hover:border-accent text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
               >
                 <LinkedinIcon className="w-3.5 h-3.5 text-[#38BDF8]" />
                 <span>LINKEDIN</span>
@@ -130,7 +130,7 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
                   soundFx.playClick('key')
                   onNavigate('contact')
                 }}
-                className="px-3.5 py-2 rounded bg-[#141724] hover:bg-[#1E2336] text-[#94A3B8] hover:text-[#F1F5F9] border border-[#252A3E] hover:border-[#252A3E] text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-3.5 py-2 rounded bg-[#101422]/90 hover:bg-[#181d2f] text-[#94A3B8] hover:text-[#F1F5F9] border border-[#1f263d] hover:border-accent text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <Mail className="w-3.5 h-3.5 text-[#10B981]" />
                 <span>CONTACT</span>
@@ -141,14 +141,14 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
                   soundFx.playClick('enter')
                   onOpenTerminal()
                 }}
-                className="px-3 py-2 rounded text-xs text-[#64748B] hover:text-[#00F0FF] transition-colors cursor-pointer ml-auto hidden sm:block"
+                className="px-3 py-2 rounded text-xs text-[#64748B] hover:text-accent transition-colors cursor-pointer ml-auto hidden sm:block"
                 title="Launch Terminal Shell (Ctrl + ~)"
               >
-                &gt;_ CLI (~)
+                &gt;_ CLI
               </button>
             </div>
-
           </div>
+
         </div>
       </div>
     </section>

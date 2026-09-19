@@ -33,7 +33,7 @@ export const AboutSection: React.FC = () => {
     <section id="about" className="py-8 scroll-mt-20 font-mono">
       {/* Section Header */}
       <div className="mb-6 pb-3 border-b border-[#1C2030]">
-        <div className="text-xs text-[#00F0FF] mb-1">// BACKGROUND & MINDSET</div>
+        <div className="text-xs text-accent mb-1">// BACKGROUND & MINDSET</div>
         <h2 className="text-2xl font-extrabold text-[#F8FAFC] tracking-tight">
           About & Engineering Philosophy
         </h2>
@@ -41,9 +41,9 @@ export const AboutSection: React.FC = () => {
 
       <div className="space-y-5">
         {/* Card 1: The Bio / Mindset */}
-        <div className="bg-[#0D0F17] border border-[#1C2030] rounded-lg p-6 shadow-lg shadow-black/20">
-          <div className="flex items-center space-x-2 text-xs font-bold text-[#00F0FF] mb-3">
-            <Terminal className="w-4 h-4 text-[#00F0FF]" />
+        <div className="frosted-glass rounded-2xl p-6">
+          <div className="flex items-center space-x-2 text-xs font-bold text-accent mb-3">
+            <Terminal className="w-4 h-4 text-accent" />
             <span>THE MINDSET // SIVA KOWSIK S ("NAGUL")</span>
           </div>
           <p className="text-sm text-[#CBD5E1] leading-relaxed mb-3">
@@ -59,7 +59,7 @@ export const AboutSection: React.FC = () => {
         </div>
 
         {/* Card 2: Academic Background */}
-        <div className="bg-[#0D0F17] border border-[#1C2030] rounded-lg p-6 shadow-lg shadow-black/20">
+        <div className="frosted-glass rounded-2xl p-6">
           <div className="flex items-center space-x-2 text-xs font-bold text-[#10B981] mb-4">
             <GraduationCap className="w-4 h-4 text-[#10B981]" />
             <span>ACADEMIC FOUNDATION</span>
@@ -75,7 +75,7 @@ export const AboutSection: React.FC = () => {
 
             <div>
               <div className="text-[#64748B] text-[11px]">DEGREE & MAJOR</div>
-              <div className="text-sm font-bold text-[#00F0FF] mt-0.5">
+              <div className="text-sm font-bold text-accent mt-0.5">
                 B.E. Computer Science & Engineering
               </div>
             </div>
@@ -90,7 +90,7 @@ export const AboutSection: React.FC = () => {
 
           <div>
             <div className="text-xs font-semibold text-[#CBD5E1] mb-2 flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-[#C084FC]" />
+              <BookOpen className="w-3.5 h-3.5 text-accent-sec" />
               <span>Core Coursework & Studies:</span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -104,7 +104,7 @@ export const AboutSection: React.FC = () => {
               ].map((course, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-1 rounded bg-[#131624] text-xs text-[#94A3B8] border border-[#22273C]"
+                  className="px-2.5 py-1 rounded bg-[#101422] text-xs text-[#94A3B8] border border-[#1f263d]"
                 >
                   {course}
                 </span>
@@ -114,9 +114,9 @@ export const AboutSection: React.FC = () => {
         </div>
 
         {/* Card 3: Engineering Principles */}
-        <div className="bg-[#0D0F17] border border-[#1C2030] rounded-lg p-6 shadow-lg shadow-black/20">
-          <div className="flex items-center space-x-2 text-xs font-bold text-[#C084FC] mb-4">
-            <Shield className="w-4 h-4 text-[#C084FC]" />
+        <div className="frosted-glass rounded-2xl p-6">
+          <div className="flex items-center space-x-2 text-xs font-bold text-accent mb-4">
+            <Shield className="w-4 h-4 text-accent" />
             <span>CORE PRINCIPLES</span>
           </div>
 
@@ -124,11 +124,15 @@ export const AboutSection: React.FC = () => {
             {principles.map((item) => (
               <div
                 key={item.num}
-                className="bg-[#111422] border border-[#1F2538] rounded-md p-4"
+                className="bg-[#101322] border border-[#1e2439] rounded-lg p-4"
               >
                 <div className="flex items-center space-x-2 mb-1.5">
-                  <span className={`text-xs font-bold ${item.color}`}>{item.num}.</span>
-                  <h4 className={`text-xs font-bold ${item.color}`}>{item.title}</h4>
+                  <span className={`text-xs font-bold ${item.num === '01' ? 'text-accent' : item.color}`}>
+                    {item.num}.
+                  </span>
+                  <h4 className={`text-xs font-bold ${item.num === '01' ? 'text-accent' : item.color}`}>
+                    {item.title}
+                  </h4>
                 </div>
                 <p className="text-xs text-[#94A3B8] leading-relaxed">{item.desc}</p>
               </div>

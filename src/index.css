@@ -78,30 +78,189 @@
   animation: blink 1s cubic-bezier(1, 0, 0, 1) infinite;
 }
 
-/* Theme accent variations */
-.theme-catppuccin {
-  --accent-primary: #CBA6F7;
-  --accent-secondary: #F5C2E7;
+/* Theme Variables & Fallbacks */
+:root {
+  --accent-primary: #F97316;
+  --accent-secondary: #FBBF24;
+  --accent-rgb: 249, 115, 22;
 }
 
-.theme-tokyo {
-  --accent-primary: #7AA2F7;
-  --accent-secondary: #BB9AF7;
+.theme-sunset {
+  --accent-primary: #F97316;
+  --accent-secondary: #FBBF24;
+  --accent-rgb: 249, 115, 22;
 }
 
-.theme-cyber {
-  --accent-primary: #8BE9FD;
-  --accent-secondary: #50FA7B;
+.theme-dusk {
+  --accent-primary: #C084FC;
+  --accent-secondary: #E879F9;
+  --accent-rgb: 192, 132, 252;
 }
 
-.theme-nord {
-  --accent-primary: #88C0D0;
-  --accent-secondary: #81A1C1;
+.theme-crimson {
+  --accent-primary: #EF4444;
+  --accent-secondary: #FB7185;
+  --accent-rgb: 239, 68, 68;
 }
 
-.theme-matrix {
-  --accent-primary: #50FA7B;
-  --accent-secondary: #A6E3A1;
+.theme-noir {
+  --accent-primary: #FFFFFF;
+  --accent-secondary: #CBD5E1;
+  --accent-rgb: 255, 255, 255;
+}
+
+/* Frosted Glass Acrylic Panels */
+.frosted-glass {
+  background: rgba(10, 13, 24, 0.62) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.frosted-glass-subtle {
+  background: rgba(12, 16, 28, 0.52) !important;
+  backdrop-filter: blur(12px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.frosted-glass-hover:hover {
+  background: rgba(16, 22, 38, 0.75) !important;
+  border-color: rgba(var(--accent-rgb), 0.5) !important;
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.45),
+    0 0 22px 0 rgba(var(--accent-rgb), 0.18),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Comprehensive Theme Accent Utility Classes */
+.text-accent {
+  color: var(--accent-primary) !important;
+}
+.text-accent-sec {
+  color: var(--accent-secondary) !important;
+}
+.bg-accent {
+  background-color: var(--accent-primary) !important;
+}
+.bg-accent-sec {
+  background-color: var(--accent-secondary) !important;
+}
+.bg-accent-soft {
+  background-color: rgba(var(--accent-rgb), 0.12) !important;
+}
+.border-accent {
+  border-color: var(--accent-primary) !important;
+}
+.border-accent-subtle {
+  border-color: rgba(var(--accent-rgb), 0.3) !important;
+}
+.hover\:border-accent:hover {
+  border-color: var(--accent-primary) !important;
+}
+.hover\:border-accent-subtle:hover {
+  border-color: rgba(var(--accent-rgb), 0.45) !important;
+}
+.hover\:text-accent:hover {
+  color: var(--accent-primary) !important;
+}
+.hover\:bg-accent:hover {
+  background-color: var(--accent-primary) !important;
+}
+.group:hover .group-hover\:text-accent {
+  color: var(--accent-primary) !important;
+}
+.group:hover .group-hover\:border-accent {
+  border-color: var(--accent-primary) !important;
+}
+.focus\:border-accent:focus {
+  border-color: var(--accent-primary) !important;
+}
+.accent-glow {
+  text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.55);
+}
+.accent-box-glow {
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.25);
+}
+.accent-ctrl {
+  accent-color: var(--accent-primary) !important;
+}
+
+/* Dedicated Sunset CRT Monitor Scanline Raster Layer */
+.crt-sunset-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.42) 50%
+  );
+  background-size: 100% 4px;
+}
+
+/* Old Television & CRT Cathode-Ray Tube Glow Layer */
+.old-tv-screen {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 38;
+  overflow: hidden;
+  background: linear-gradient(
+    rgba(18, 16, 26, 0) 50%,
+    rgba(0, 0, 0, 0.35) 50%
+  );
+  background-size: 100% 4px;
+}
+
+/* Television Curvature Vignette & Phosphor Tube Bloom */
+.old-tv-screen::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.38) 80%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
+  box-shadow: inset 0 0 140px rgba(var(--accent-rgb), 0.22);
+  animation: tvFlicker 0.25s infinite;
+}
+
+/* Subtle CRT Refresh Scanline Roll */
+.old-tv-screen::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.025) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 100% 90px;
+  animation: tvScanlineRoll 10s linear infinite;
+}
+
+@keyframes tvScanlineRoll {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes tvFlicker {
+  0% { opacity: 0.97; }
+  48% { opacity: 1; }
+  50% { opacity: 0.94; }
+  52% { opacity: 1; }
+  85% { opacity: 0.98; }
+  100% { opacity: 0.97; }
 }
 
 /* Smooth fade-in animation for modal and rain */
@@ -113,3 +272,18 @@
 .animate-fade-in {
   animation: fadeIn 0.18s ease-out forwards;
 }
+
+/* Smooth vinyl record spin */
+@keyframes spinVinyl {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-vinyl-spin {
+  animation: spinVinyl 8s linear infinite;
+}
+

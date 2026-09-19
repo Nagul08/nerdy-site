@@ -1,70 +1,142 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Play, Pause, Volume2, VolumeX, Music } from 'lucide-react'
+import {
+  Play,
+  Pause,
+  SkipForward,
+  Volume2,
+  VolumeX,
+  Radio,
+  Disc3,
+} from 'lucide-react'
 import { soundFx } from '../utils/audio'
+import spideyImg from '../assets/Spidey.png'
 
-export const RADIO_STATIONS = [
+export interface RadioStation {
+  id: string
+  name: string
+  genre: string
+  url: string
+  freq: string
+  code: string
+}
+
+export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'cliamp-lofi',
-    name: 'Lo-Fi Beats',
+    name: 'Lo-Fi Coding Beats',
+    genre: 'Chill / Study / Focus',
     url: 'https://radio.cliamp.stream/lofi/stream',
+    freq: '140.85 MHz',
+    code: '01 LO-FI',
   },
   {
     id: 'cliamp-synthwave',
-    name: 'Synthwave',
+    name: 'Synthwave 80s',
+    genre: 'Retro / Outrun / Neon',
     url: 'https://radio.cliamp.stream/synthwave/stream',
+    freq: '141.12 MHz',
+    code: '02 SYNTH',
+  },
+  {
+    id: 'nightwave-plaza',
+    name: 'Nightwave Plaza',
+    genre: 'Vaporwave / Future Funk',
+    url: 'https://radio.plaza.one/mp3',
+    freq: '143.75 MHz',
+    code: '03 PLAZA',
+  },
+  {
+    id: 'cliamp-edm',
+    name: 'Cyber EDM',
+    genre: 'Electronic / Cyber Bass',
+    url: 'https://radio.cliamp.stream/edm/stream',
+    freq: '142.33 MHz',
+    code: '04 EDM',
   },
 ]
 
 export const CliampPlayer: React.FC = () => {
+  const [stationIndex, setStationIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [stationIndex, setStationIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
-  const [showVolume, setShowVolume] = useState(false)
-  const [volume, setVolume] = useState(70)
+  const [volume, setVolume] = useState(75) // 0 - 100
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [eqBars, setEqBars] = useState<number[]>([2, 4, 3, 5, 2, 6, 4, 3, 5, 2, 4, 3, 5, 3, 4, 2])
+  const [vuLeft, setVuLeft] = useState(4)
+  const [vuRight, setVuRight] = useState(5)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const currentStation = RADIO_STATIONS[stationIndex]
 
+  // Setup / Clean Audio Element
   useEffect(() => {
     const audio = new Audio()
     audio.crossOrigin = 'anonymous'
     audio.preload = 'none'
     audioRef.current = audio
 
-    const onPlaying = () => {
+    const handlePlaying = () => {
       setIsLoading(false)
       setIsPlaying(true)
     }
 
-    const onWaiting = () => {
+    const handleWaiting = () => {
       setIsLoading(true)
     }
 
-    const onError = () => {
+    const handleError = () => {
       setIsLoading(false)
       setIsPlaying(false)
     }
 
-    audio.addEventListener('playing', onPlaying)
-    audio.addEventListener('waiting', onWaiting)
-    audio.addEventListener('error', onError)
+    audio.addEventListener('playing', handlePlaying)
+    audio.addEventListener('waiting', handleWaiting)
+    audio.addEventListener('error', handleError)
 
     return () => {
       audio.pause()
-      audio.removeEventListener('playing', onPlaying)
-      audio.removeEventListener('waiting', onWaiting)
-      audio.removeEventListener('error', onError)
+      audio.removeEventListener('playing', handlePlaying)
+      audio.removeEventListener('waiting', handleWaiting)
+      audio.removeEventListener('error', handleError)
     }
   }, [])
 
+  // Sync Volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume / 100
     }
   }, [volume, isMuted])
 
-  const togglePlay = async () => {
+  // Track listening elapsed time & EQ / VU meters
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval> | undefined
+    let eqTimer: ReturnType<typeof setInterval> | undefined
+
+    if (isPlaying) {
+      timer = setInterval(() => {
+        setElapsedSeconds((prev) => prev + 1)
+      }, 1000)
+
+      eqTimer = setInterval(() => {
+        setEqBars(Array.from({ length: 16 }, () => Math.floor(Math.random() * 8) + 1))
+        setVuLeft(Math.floor(Math.random() * 6) + 4)
+        setVuRight(Math.floor(Math.random() * 6) + 3)
+      }, 120)
+    } else {
+      setEqBars([1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1])
+      setVuLeft(1)
+      setVuRight(1)
+    }
+
+    return () => {
+      if (timer) clearInterval(timer)
+      if (eqTimer) clearInterval(eqTimer)
+    }
+  }, [isPlaying])
+
+  const handleTogglePlay = async () => {
     soundFx.playClick('enter')
     if (!audioRef.current) return
 
@@ -82,96 +154,364 @@ export const CliampPlayer: React.FC = () => {
         setIsPlaying(true)
         setIsLoading(false)
       } catch (err) {
-        console.error('Audio stream playback error:', err)
+        console.error('Audio play error:', err)
         setIsLoading(false)
         setIsPlaying(false)
       }
     }
   }
 
-  const nextStation = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const handleSelectStation = (index: number) => {
+    if (index === stationIndex) return
     soundFx.playClick('key')
-    const nextIdx = (stationIndex + 1) % RADIO_STATIONS.length
-    setStationIndex(nextIdx)
+    setStationIndex(index)
+    setElapsedSeconds(0)
+
     if (isPlaying && audioRef.current) {
-      audioRef.current.src = RADIO_STATIONS[nextIdx].url
+      setIsLoading(true)
+      audioRef.current.src = RADIO_STATIONS[index].url
       audioRef.current.load()
-      audioRef.current.play().catch(() => {})
+      audioRef.current.play().then(() => {
+        setIsLoading(false)
+        setIsPlaying(true)
+      }).catch(() => {
+        setIsLoading(false)
+        setIsPlaying(false)
+      })
     }
   }
 
+  const handleNextStation = () => {
+    soundFx.playClick('key')
+    const nextIdx = (stationIndex + 1) % RADIO_STATIONS.length
+    handleSelectStation(nextIdx)
+  }
+
+  const formatTimer = (sec: number) => {
+    const m = Math.floor(sec / 60)
+    const s = sec % 60
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+  }
+
   return (
-    <div className="fixed bottom-5 right-5 z-40 font-mono text-xs select-none">
-      <div
-        onMouseEnter={() => setShowVolume(true)}
-        onMouseLeave={() => setShowVolume(false)}
-        className="bg-[#0D0F17]/95 border border-[#1E2436] hover:border-[#00F0FF]/40 rounded-full px-3.5 py-2 shadow-2xl backdrop-blur-md flex items-center gap-2.5 transition-all text-[#CBD5E1]"
-      >
-        {/* Animated equalizer bars / icon */}
-        <div className="flex items-center space-x-1 text-[#00F0FF]">
-          {isPlaying ? (
-            <div className="flex items-end space-x-0.5 h-3.5 w-3">
-              <span className="w-0.5 bg-[#00F0FF] h-2 animate-pulse" />
-              <span className="w-0.5 bg-[#00F0FF] h-3.5 animate-pulse delay-75" />
-              <span className="w-0.5 bg-[#00F0FF] h-1.5 animate-pulse delay-150" />
+    <section id="audio" className="py-4 scroll-mt-20 font-mono">
+      {/* Frosted Glass Cyberdeck Audio Unit Housing */}
+      <div className="frosted-glass rounded-2xl p-5 sm:p-7 shadow-2xl relative overflow-hidden transition-all duration-300">
+        
+        {/* Top Metallic Specular Bevel Line */}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+
+        {/* Header Strip & Presets */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-white/10 gap-3">
+          
+          <div className="flex items-center space-x-2.5">
+            <div className="p-1.5 rounded-md bg-white/5 border border-white/10 text-accent">
+              <Radio className={`w-4 h-4 ${isPlaying ? 'animate-pulse' : ''}`} />
             </div>
-          ) : (
-            <Music className="w-3.5 h-3.5 text-[#64748B]" />
-          )}
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="font-bold text-xs tracking-wider text-[#F8FAFC]">
+                  DECK-X // TURNTABLE SUBSYSTEM
+                </span>
+                <span className="text-[10px] text-accent bg-accent-soft px-2 py-0.5 rounded border border-accent-subtle font-bold">
+                  {currentStation.freq}
+                </span>
+              </div>
+              <div className="text-[10px] text-[#94A3B8]">ICECAST LOW-LATENCY STREAMER</div>
+            </div>
+          </div>
+
+          {/* Quick Preset Buttons */}
+          <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
+            {RADIO_STATIONS.map((st, idx) => {
+              const isSelected = idx === stationIndex
+              return (
+                <button
+                  key={st.id}
+                  onClick={() => handleSelectStation(idx)}
+                  className={`px-2.5 py-1 rounded text-[11px] font-bold tracking-tight whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                    isSelected
+                      ? 'bg-accent text-[#08090C] shadow-md accent-box-glow'
+                      : 'bg-white/5 text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/10 border border-white/10'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isSelected && isPlaying
+                        ? 'bg-[#08090C] animate-ping'
+                        : isSelected
+                        ? 'bg-[#08090C]'
+                        : 'bg-[#64748B]'
+                    }`}
+                  />
+                  <span>{st.code}</span>
+                </button>
+              )
+            })}
+          </div>
+
         </div>
 
-        {/* Station name toggle */}
-        <button
-          onClick={nextStation}
-          className="text-xs font-semibold text-[#F1F5F9] hover:text-[#00F0FF] transition-colors cursor-pointer"
-          title="Click to switch radio station"
-        >
-          {isLoading ? 'Connecting...' : currentStation.name}
-        </button>
+        {/* Main Unit Deck: Turntable Platter (Left) + Cyber Audio Screen (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          
+          {/* Left Column: Authentic Vinyl Turntable with Needle Tonearm */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center">
+            <div className="relative p-2 select-none">
+              
+              {/* Turntable Plinth Platform */}
+              <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-2xl bg-[#06080F]/90 border border-white/10 shadow-2xl relative flex items-center justify-center p-3">
+                
+                {/* Platter Strobe Dots Ring */}
+                <div
+                  className={`w-48 h-48 sm:w-54 sm:h-54 rounded-full border-2 border-dashed border-white/20 absolute flex items-center justify-center ${
+                    isPlaying ? 'animate-vinyl-spin' : ''
+                  }`}
+                  style={{ animationDuration: '24s' }}
+                />
 
-        {/* Volume controls (visible on hover or active) */}
-        {showVolume && (
-          <div className="flex items-center space-x-2 pl-1 border-l border-[#22273A] animate-fade-in">
-            <button
-              onClick={() => setIsMuted(!isMuted)}
-              className="text-[#94A3B8] hover:text-[#F1F5F9] cursor-pointer"
-              title={isMuted ? 'Unmute' : 'Mute'}
-            >
-              {isMuted ? (
-                <VolumeX className="w-3 h-3 text-[#EF4444]" />
-              ) : (
-                <Volume2 className="w-3 h-3" />
-              )}
-            </button>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={isMuted ? 0 : volume}
-              onChange={(e) => {
-                setVolume(Number(e.target.value))
-                if (isMuted) setIsMuted(false)
-              }}
-              className="w-12 h-1 bg-[#1E2436] rounded-lg appearance-none cursor-pointer accent-[#00F0FF]"
-              title="Volume"
-            />
+                {/* Heavy Cast-Iron Vinyl Platter with Concentric Grooves */}
+                <div className="w-44 h-44 sm:w-50 sm:h-50 rounded-full bg-[#040508] border-4 border-[#1c2235] shadow-inner relative flex items-center justify-center p-2 group">
+                  
+                  {/* Subtle Vinyl Grooves Texture */}
+                  <div className="absolute inset-2 rounded-full border border-white/5 pointer-events-none" />
+                  <div className="absolute inset-5 rounded-full border border-white/5 pointer-events-none" />
+                  <div className="absolute inset-8 rounded-full border border-white/5 pointer-events-none" />
+                  <div className="absolute inset-11 rounded-full border border-white/5 pointer-events-none" />
+
+                  {/* Rotating Vinyl Disc Core with Spidey.png Artwork */}
+                  <div
+                    className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-white/20 relative shadow-2xl animate-vinyl-spin"
+                    style={{
+                      animationPlayState: isPlaying ? 'running' : 'paused',
+                    }}
+                  >
+                    <img
+                      src={spideyImg}
+                      alt="Spidey Vinyl Disc Artwork"
+                      className="w-full h-full object-cover object-center filter contrast-125 saturate-110 select-none"
+                    />
+
+                    {/* Concentric Vinyl Groove Specular Sheen */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/10 pointer-events-none rounded-full" />
+
+                    {/* Center Brass Spindle & Hole */}
+                    <div className="absolute inset-0 m-auto w-4 h-4 rounded-full bg-[#090C14] border-2 border-[#CBD5E1] shadow-md z-10 flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#CBD5E1]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mechanical Tonearm Assembly */}
+                <div
+                  className="absolute top-4 right-4 pointer-events-none transition-transform duration-700 ease-out origin-top-right"
+                  style={{
+                    transform: isPlaying ? 'rotate(19deg)' : 'rotate(-8deg)',
+                  }}
+                >
+                  {/* Tonearm Pivot Base / Gimbal */}
+                  <div className="w-6 h-6 rounded-full bg-[#20273c] border border-white/30 shadow-md relative flex items-center justify-center">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#CBD5E1]" />
+                  </div>
+
+                  {/* Tonearm Wand Rod */}
+                  <div className="w-1 h-24 sm:h-28 bg-gradient-to-b from-[#94A3B8] via-[#E2E8F0] to-[#64748B] rounded-full mx-auto shadow-sm" />
+
+                  {/* Headshell & Cartridge with LED Stylus Light */}
+                  <div className="w-3 h-5 bg-[#0F1422] border border-white/30 rounded-xs -mt-1 mx-auto relative shadow-sm">
+                    <span
+                      className={`absolute bottom-0 inset-x-0 h-1 rounded-full ${
+                        isPlaying ? 'bg-accent shadow-[0_0_8px_var(--accent-primary)] animate-pulse' : 'bg-[#475569]'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Platter Strobe Light Sensor */}
+                <div className="absolute bottom-3 left-3 flex items-center space-x-1.5">
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      isPlaying ? 'bg-accent shadow-[0_0_8px_var(--accent-primary)] animate-ping' : 'bg-white/20'
+                    }`}
+                  />
+                  <span className="text-[9px] text-[#64748B] font-bold">
+                    {isPlaying ? '33 ⅓ RPM' : 'IDLE'}
+                  </span>
+                </div>
+
+              </div>
+
+              {/* Status Note Under Turntable */}
+              <div className="text-[10px] text-[#94A3B8] mt-2.5 text-center font-semibold flex items-center justify-center gap-1.5">
+                <Disc3 className={`w-3.5 h-3.5 text-accent ${isPlaying ? 'animate-spin' : ''}`} />
+                <span>{isPlaying ? 'TURNTABLE ROTATING // AUDIO ENGAGED' : 'TONEARM PARKED // PRESS PLAY'}</span>
+              </div>
+
+            </div>
           </div>
-        )}
 
-        {/* Play / Pause Toggle Button */}
-        <button
-          onClick={togglePlay}
-          className={`p-1.5 rounded-full cursor-pointer transition-colors ${
-            isPlaying
-              ? 'bg-[#00F0FF] text-[#08090C] hover:bg-[#38BDF8]'
-              : 'bg-[#181C2C] text-[#F1F5F9] hover:bg-[#252B42]'
-          }`}
-          title={isPlaying ? 'Pause' : 'Play lo-fi radio'}
-        >
-          {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-        </button>
+          {/* Right Column: Cybernetic OLED Display Screen, VU Meters & Controls */}
+          <div className="lg:col-span-7 flex flex-col justify-center space-y-4">
+            
+            {/* Cyber LCD/OLED Digital Display Box */}
+            <div className="bg-[#05070D]/90 border border-white/10 rounded-xl p-4 sm:p-5 shadow-inner relative overflow-hidden">
+              
+              {/* Screen Specular Reflection */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none" />
+
+              {/* Top Station Line */}
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-base sm:text-lg font-extrabold text-[#F8FAFC] tracking-tight">
+                      {currentStation.name}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-[#94A3B8] mt-0.5">{currentStation.genre}</p>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-xs font-bold text-accent font-mono tabular-nums">
+                    {formatTimer(elapsedSeconds)}
+                  </span>
+                  <div className="text-[9px] text-[#64748B] tracking-wider uppercase font-semibold">
+                    {isLoading ? 'BUFFERING' : isPlaying ? 'ON AIR' : 'PAUSED'}
+                  </div>
+                </div>
+              </div>
+
+              {/* 16-Band Animated Visualizer EQ */}
+              <div className="mt-3 pt-3 border-t border-white/10">
+                <div className="flex items-end justify-between gap-1 h-10 px-1 bg-black/40 rounded-lg p-2 border border-white/5">
+                  {eqBars.map((val, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        height: `${Math.max(12, (val / 8) * 100)}%`,
+                      }}
+                      className={`flex-1 rounded-xs transition-all duration-100 ${
+                        isPlaying
+                          ? idx % 2 === 0
+                            ? 'bg-accent shadow-[0_0_8px_var(--accent-primary)]'
+                            : 'bg-accent-sec'
+                          : 'bg-white/15'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Stereo VU Channel Meters */}
+              <div className="mt-3 grid grid-cols-2 gap-3 text-[10px] font-mono text-[#64748B]">
+                <div className="flex items-center space-x-2 bg-black/30 px-2.5 py-1 rounded border border-white/5">
+                  <span className="font-bold text-accent">L</span>
+                  <div className="flex-1 flex space-x-0.5">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`flex-1 h-1.5 rounded-xs ${
+                          isPlaying && i < vuLeft
+                            ? i > 5
+                              ? 'bg-[#EF4444]'
+                              : 'bg-accent'
+                            : 'bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[9px] text-[#94A3B8]">-3dB</span>
+                </div>
+
+                <div className="flex items-center space-x-2 bg-black/30 px-2.5 py-1 rounded border border-white/5">
+                  <span className="font-bold text-accent">R</span>
+                  <div className="flex-1 flex space-x-0.5">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`flex-1 h-1.5 rounded-xs ${
+                          isPlaying && i < vuRight
+                            ? i > 5
+                              ? 'bg-[#EF4444]'
+                              : 'bg-accent'
+                            : 'bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[9px] text-[#94A3B8]">-4dB</span>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Tactile Hardware Controls Row */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+              
+              <div className="flex items-center space-x-2.5">
+                {/* Play / Pause Primary Button */}
+                <button
+                  onClick={handleTogglePlay}
+                  className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg ${
+                    isPlaying
+                      ? 'bg-accent hover:opacity-90 text-[#08090C] accent-box-glow'
+                      : 'bg-white/10 hover:bg-white/20 text-[#F1F5F9] border border-white/15'
+                  }`}
+                  title={isPlaying ? 'Pause' : 'Play'}
+                >
+                  {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+                  <span>{isPlaying ? 'PAUSE' : 'PLAY'}</span>
+                </button>
+
+                {/* Next Station Button */}
+                <button
+                  onClick={handleNextStation}
+                  className="px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[#CBD5E1] hover:text-accent border border-white/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Switch to next station"
+                >
+                  <SkipForward className="w-3.5 h-3.5" />
+                  <span>NEXT</span>
+                </button>
+              </div>
+
+              {/* Volume Slider & Mute Toggle */}
+              <div className="flex items-center space-x-2 bg-[#05070D]/80 px-3 py-2 rounded-xl border border-white/10 shadow-inner">
+                <button
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="text-[#94A3B8] hover:text-[#F1F5F9] cursor-pointer"
+                  title={isMuted ? 'Unmute' : 'Mute'}
+                >
+                  {isMuted || volume === 0 ? (
+                    <VolumeX className="w-4 h-4 text-[#EF4444]" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 text-accent" />
+                  )}
+                </button>
+
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => {
+                    setVolume(Number(e.target.value))
+                    if (isMuted) setIsMuted(false)
+                  }}
+                  className="w-16 sm:w-24 h-1 bg-[#1E2436] rounded-lg appearance-none cursor-pointer accent-ctrl"
+                  title="Volume Control"
+                />
+
+                <span className="text-[11px] text-[#94A3B8] font-bold tabular-nums min-w-[28px] text-right">
+                  {isMuted ? '0%' : `${volume}%`}
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
-    </div>
+    </section>
   )
 }

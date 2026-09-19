@@ -11,17 +11,36 @@ import { CliampPlayer } from './components/CliampPlayer'
 import { TerminalFooter } from './components/TerminalFooter'
 import { CryptoGlyphIntro } from './components/CryptoGlyphIntro'
 import { soundFx } from './utils/audio'
+import type { ThemeName } from './types'
+import { THEMES, getRandomTheme } from './utils/themeConfig'
+import { useAnimatedFavicon } from './utils/useAnimatedFavicon'
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [isTerminalOpen, setIsTerminalOpen] = useState(false)
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>(() => getRandomTheme())
+  const [crtEnabled, setCrtEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('niko_crt_enabled')
+    return saved !== null ? saved === 'true' : true
+  })
   const [showIntro, setShowIntro] = useState(() => {
     return !sessionStorage.getItem('has_seen_niko_intro')
   })
 
+  // Dynamic Animated Favicon synced with current active theme palette
+  useAnimatedFavicon(currentTheme)
+
+  const handleToggleCrt = (forceState?: boolean) => {
+    setCrtEnabled((prev) => {
+      const next = typeof forceState === 'boolean' ? forceState : !prev
+      localStorage.setItem('niko_crt_enabled', String(next))
+      return next
+    })
+  }
+
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ['home', 'projects', 'skills', 'about', 'social', 'contact']
+    const sectionIds = ['home', 'audio', 'projects', 'skills', 'about', 'social', 'contact']
     const observers: IntersectionObserver[] = []
 
     sectionIds.forEach((id) => {
@@ -88,20 +107,65 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  return (
-    <div className="min-h-screen bg-[#08090C] text-[#F8FAFC] font-mono selection:bg-[#00F0FF] selection:text-[#08090C]">
-      {/* Crypto Glyph Opening Screen */}
-      <CryptoGlyphIntro
-        isOpen={showIntro}
-        onClose={() => setShowIntro(false)}
-      />
+  const activeTheme = THEMES[currentTheme] || THEMES.sunset
 
-      {/* Top Navbar */}
-      <TerminalHeader
-        activeSection={activeSection}
-        onNavigate={scrollToSection}
-        onToggleTerminal={() => setIsTerminalOpen((prev) => !prev)}
-      />
+  return (
+    <div
+      className={`min-h-screen text-[#F8FAFC] font-mono selection:bg-accent selection:text-[#08090C] theme-${currentTheme} relative overflow-x-hidden`}
+      style={
+        {
+          '--accent-primary': activeTheme.primaryHex,
+          '--accent-secondary': activeTheme.secondaryHex,
+          '--accent-rgb': activeTheme.rgbPrimary,
+        } as React.CSSProperties
+      }
+    >
+      {/* ── Fixed High-Visibility Wallpaper Background from pics/ ── */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <img
+          key={activeTheme.id}
+          src={activeTheme.bgImage}
+          alt={activeTheme.name}
+          className="w-full h-full object-cover object-center brightness-[0.65] contrast-[1.08] saturate-[1.1] transition-all duration-700 select-none scale-100"
+        />
+        {/* Atmospheric Tint: Clean glass wash ensuring all text is easily readable while photo shines through */}
+        <div
+          className="absolute inset-0 transition-colors duration-700"
+          style={{
+            background:
+              'radial-gradient(ellipse at center, rgba(6, 8, 14, 0.52) 0%, rgba(6, 8, 14, 0.76) 75%, rgba(6, 8, 14, 0.90) 100%)',
+          }}
+        />
+        {/* Subtle Scanline Overlay */}
+        <div className="absolute inset-0 crt-overlay opacity-15 pointer-events-none" />
+      </div>
+
+      {/* Old TV Cathode Tube Phosphor Glow & Rolling Scanlines Layer */}
+      {crtEnabled && <div className="old-tv-screen pointer-events-none" />}
+
+      {/* Dedicated Retro CRT Monitor Scanline Raster Layer for Sunset Theme (matches Spidey.png) */}
+      {currentTheme === 'sunset' && crtEnabled && (
+        <div className="crt-sunset-scanlines pointer-events-none" />
+      )}
+
+      {/* ── Foreground Content ── */}
+      <div className="relative z-10">
+        {/* Crypto Glyph Opening Screen */}
+        <CryptoGlyphIntro
+          isOpen={showIntro}
+          onClose={() => setShowIntro(false)}
+        />
+
+        {/* Top Navbar */}
+        <TerminalHeader
+          activeSection={activeSection}
+          onNavigate={scrollToSection}
+          onToggleTerminal={() => setIsTerminalOpen((prev) => !prev)}
+          currentTheme={currentTheme}
+          onChangeTheme={setCurrentTheme}
+          crtEnabled={crtEnabled}
+          onToggleCrt={handleToggleCrt}
+        />
 
       {/* Main Content Area */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-12">
@@ -111,37 +175,40 @@ export default function App() {
           onOpenTerminal={() => setIsTerminalOpen(true)}
         />
 
-        {/* 2. Featured Projects */}
+        {/* 2. Audio Subsystem: Spinning Spidey Vinyl Disc & Lo-Fi Streams */}
+        <CliampPlayer />
+
+        {/* 3. Featured Projects */}
         <ProjectsSection />
 
-        {/* 3. Skills & Arsenal */}
+        {/* 4. Skills & Arsenal */}
         <SkillsSection />
 
-        {/* 4. About & Mindset */}
+        {/* 5. About & Mindset */}
         <AboutSection />
 
-        {/* 5. Social Channels */}
+        {/* 6. Social Channels */}
         <SocialSection />
 
-        {/* 6. Contact Form & Transmission */}
+        {/* 7. Contact Form & Transmission */}
         <ContactSection />
       </main>
 
       {/* Clean Footer */}
       <TerminalFooter onScrollToTop={scrollToTop} />
 
-      {/* Discreet, Ultra-Minimal Floating Lo-Fi Audio Pill */}
-      <CliampPlayer />
-
-      {/* Interactive CLI Drawer (on ~ or CLI button) */}
-      <InteractiveTerminalModal
-        isOpen={isTerminalOpen}
-        onClose={() => setIsTerminalOpen(false)}
-        onNavigate={scrollToSection}
-        onToggleMatrix={() => {}}
-        onChangeTheme={() => {}}
-        onReplayIntro={() => setShowIntro(true)}
-      />
+        {/* Interactive CLI Drawer (on ~ or CLI button) */}
+        <InteractiveTerminalModal
+          isOpen={isTerminalOpen}
+          onClose={() => setIsTerminalOpen(false)}
+          onNavigate={scrollToSection}
+          onToggleMatrix={() => {}}
+          onChangeTheme={setCurrentTheme}
+          onReplayIntro={() => setShowIntro(true)}
+          crtEnabled={crtEnabled}
+          onToggleCrt={handleToggleCrt}
+        />
+      </div>
     </div>
   )
 }
