@@ -36,12 +36,12 @@ export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOp
 
   const handleCopyNeofetch = () => {
     soundFx.playClick('key')
-    const neofetchSummary = `Nagul@portfolio
+    const neofetchSummary = `retr0@portfolio
+Name: Siva Kowsik S (Nagul)
 OS: Windows 11
 Kernel: Developer Mode / WSL2
-CPU: Computer Science Engineering
-Shell: PowerShell
-Editor: VS Code + Neovim
+CPU: Computer Science Engineering (Second Year)
+College: Sri Sairam Engineering College
 Location: Chennai, India`
     navigator.clipboard.writeText(neofetchSummary)
     setCopyFeedback(true)
@@ -123,9 +123,12 @@ Location: Chennai, India`
               {/* User@Host Header */}
               <div className="mb-4">
                 <div className="text-xl sm:text-2xl font-bold font-mono tracking-tight flex items-center gap-2">
-                  <span className="text-[#8BE9FD]">nagul</span>
+                  <span className="text-[#8BE9FD]">retr0</span>
                   <span className="text-[#7F849C]">@</span>
                   <span className="text-[#CBA6F7]">portfolio</span>
+                  <span className="text-xs font-normal px-2 py-0.5 rounded bg-[#CBA6F7]/10 text-[#CBA6F7] border border-[#CBA6F7]/30 ml-2">
+                    Siva Kowsik S
+                  </span>
                 </div>
                 <div className="font-mono text-xs text-[#585B70] mt-0.5">
                   ─────────────────────────────────────────────────────

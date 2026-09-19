@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowUp, Coffee, GitBranch } from 'lucide-react'
+import { ArrowUp, GitBranch } from 'lucide-react'
 import { soundFx } from '../utils/audio'
 
 interface TerminalFooterProps {
@@ -15,7 +15,7 @@ export const TerminalFooter: React.FC<TerminalFooterProps> = ({ onScrollToTop })
           <span className="bg-[#CBA6F7] text-[#0D0F18] font-bold px-1.5 py-0.2 rounded-xs">
             TMUX 3.4
           </span>
-          <span className="text-[#D8DEE9]">session: [0:nagul*]</span>
+          <span className="text-[#D8DEE9]">session: [0:retr0*]</span>
           <span className="text-[#585B70]">|</span>
           <span className="text-[#A6E3A1] flex items-center gap-1">
             <GitBranch className="w-3 h-3" /> main
@@ -48,7 +48,7 @@ export const TerminalFooter: React.FC<TerminalFooterProps> = ({ onScrollToTop })
         </div>
 
         <div className="text-sm sm:text-base font-bold text-[#8BE9FD] flex items-center justify-center gap-2">
-          <span>nagul@portfolio:~$</span>
+          <span>retr0@portfolio:~$</span>
           <span className="text-[#F9E2AF]">exit</span>
         </div>
 
@@ -58,12 +58,12 @@ export const TerminalFooter: React.FC<TerminalFooterProps> = ({ onScrollToTop })
         </div>
 
         <div className="pt-4 text-xs text-[#D8DEE9]">
-          © 2026 Nagul. All rights reserved.
+          © 2026 Siva Kowsik S (Nagul). All rights reserved.
         </div>
 
         <div className="text-xs text-[#7F849C] flex items-center justify-center gap-1.5">
-          <span>Built with curiosity + questionable amounts of caffeine</span>
-          <Coffee className="w-3.5 h-3.5 text-[#FAB387]" />
+          <span>Built with curiosity + questionable amounts of Water.</span>
+          <span className="text-[#8BE9FD]">💧</span>
         </div>
 
         <div className="text-[11px] text-[#585B70] pt-2">

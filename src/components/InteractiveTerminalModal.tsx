@@ -146,9 +146,10 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
       case 'about':
         responseNode = (
           <div className="text-xs space-y-1 text-[#D8DEE9]">
-            <div className="text-[#8BE9FD] font-bold">Nagul - Computer Science Engineering Student</div>
+            <div className="text-[#8BE9FD] font-bold">Siva Kowsik S -AKA- Nagul</div>
+            <div className="text-xs text-[#CBA6F7]">CSE '29 @ Sri Sairam Engineering College</div>
             <p className="text-[#BAC2DE]">
-              Enjoys building full-stack web platforms, exploring systems programming, and breaking functional systems just to understand how they work under the hood.
+              Building for the web, cranking Linux setups, diving into cyber security, and breaking systems to understand how they work under the hood.
             </p>
             <div className="text-[#A6E3A1] text-[11px]">&gt; Navigating to #about section...</div>
           </div>
@@ -161,7 +162,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
           <div className="text-xs space-y-1">
             <div className="text-[#A6E3A1]">&gt; Navigating to ~/projects directory...</div>
             <div className="text-[#7F849C]">
-              Found 6 repositories: devpulse-telemetry, bytevibe-interactive-shell, cachecraft-distributed-kv, neuralcanvas-ai, hypr-rice-dotfiles, algotrace-visualizer.
+              Found projects: nerdy-site, devpulse-telemetry, bytevibe-interactive-shell, cachecraft-distributed-kv, neuralcanvas-ai, hypr-rice-dotfiles, algotrace-visualizer.
             </div>
           </div>
         )
@@ -173,7 +174,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
           <div className="text-xs space-y-1">
             <div className="text-[#A6E3A1]">&gt; Reading skills.sh...</div>
             <div className="text-[#D8DEE9]">
-              Frontend (85%), Backend (70%), Python (80%), Database (65%), Git (88%), Linux/Docker (60%).
+              Frontend (85%), Backend (70%), Python (80%), Database (65%), Git (88%), CyberSec & Linux (72%).
             </div>
           </div>
         )
@@ -184,7 +185,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
         responseNode = (
           <div className="text-xs space-y-1">
             <div className="text-[#8BE9FD]">&gt; git log --oneline -n 3:</div>
-            <div className="text-[#F9E2AF]">abc1234 feat(core): implement zero-copy buffer pooling</div>
+            <div className="text-[#F9E2AF]">abc1234 feat(nerdy-site): launch customized terminal portfolio</div>
             <div className="text-[#F9E2AF]">91fa221 refactor(terminal): optimize command parser</div>
             <div className="text-[#F9E2AF]">72bc981 perf(cache): achieve O(1) LRU eviction</div>
             <div className="text-[#A6E3A1] pt-1">&gt; Navigating to #github...</div>
@@ -198,9 +199,10 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
           <div className="text-xs space-y-1">
             <div className="text-[#A6E3A1]">&gt; Outbound sockets available:</div>
             <div>GitHub: github.com/Nagul08</div>
-            <div>LinkedIn: linkedin.com/in/nagul</div>
-            <div>Instagram: @nagul_dev</div>
-            <div>Email: nagul.dev@gmail.com</div>
+            <div>LinkedIn: linkedin.com/in/siva-kowsik-s</div>
+            <div>Instagram: @nagul_08_x_</div>
+            <div>Discord: itz_nagul_08_</div>
+            <div>Email: sivphax08@gmail.com</div>
           </div>
         )
         onNavigate('social')
@@ -210,7 +212,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
         responseNode = (
           <div className="text-xs space-y-1">
             <div className="text-[#A6E3A1]">&gt; Opening transmission prompt...</div>
-            <div className="text-[#D8DEE9]">Email: nagul.dev@gmail.com</div>
+            <div className="text-[#D8DEE9]">Email: sivphax08@gmail.com</div>
           </div>
         )
         onNavigate('contact')
@@ -398,7 +400,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
             />
             <span className="text-[#8BE9FD] font-semibold ml-2 flex items-center gap-1.5">
               <TerminalIcon className="w-3.5 h-3.5" />
-              <span>visitor@nagul: ~ (zsh / interactive)</span>
+              <span>visitor@retr0: ~ (zsh / interactive)</span>
             </span>
           </div>
 
@@ -447,7 +449,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
             <div key={log.id} className="space-y-1">
               {log.command && (
                 <div className="flex items-center space-x-2 text-[#7F849C]">
-                  <span className="text-[#A6E3A1]">visitor@nagul:~$</span>
+                  <span className="text-[#A6E3A1]">visitor@retr0:~$</span>
                   <span className="text-[#D8DEE9] font-medium">{log.command}</span>
                 </div>
               )}
@@ -461,7 +463,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
         {/* Terminal Input Line */}
         <div className="bg-[#111420] p-3 border-t border-[#282C3F] flex items-center space-x-2">
           <span className="text-[#A6E3A1] text-xs font-bold shrink-0">
-            visitor@nagul:~$
+            visitor@retr0:~$
           </span>
           <input
             ref={inputRef}

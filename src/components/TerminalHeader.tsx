@@ -150,14 +150,14 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             <div className="border border-[#313754] bg-[#111420] px-3 py-1.5 rounded-sm font-mono shadow-sm">
               <div className="text-[11px] text-[#7F849C] flex items-center gap-1.5 mb-0.5">
                 <span>┌─[</span>
-                <span className="text-[#8BE9FD] font-medium">nagul@portfolio</span>
+                <span className="text-[#8BE9FD] font-medium">retr0@portfolio</span>
                 <span>]──────────────────────────────┐</span>
               </div>
               <div className="pl-3 py-0.5 border-l-2 border-[#8BE9FD]/50 my-1">
                 <div className="text-base sm:text-lg font-bold text-[#F5C2E7] tracking-tight flex items-center gap-2">
                   <span>Nagul</span>
                   <span className="text-xs font-normal px-2 py-0.5 rounded bg-[#CBA6F7]/10 text-[#CBA6F7] border border-[#CBA6F7]/30">
-                    CSE '26
+                    CSE '29
                   </span>
                 </div>
                 <div className="text-xs text-[#89B4FA] font-medium">

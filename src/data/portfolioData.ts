@@ -2,6 +2,8 @@ import type { Project, GitCommit, AudioTrack } from '../types'
 
 export const SYSTEM_INFO = {
   user: 'Nagul',
+  officialName: 'Siva Kowsik S',
+  username: 'retr0',
   host: 'portfolio',
   title: 'Computer Science Engineering Student',
   status: 'ONLINE',
@@ -9,10 +11,10 @@ export const SYSTEM_INFO = {
   specs: [
     { label: 'OS', value: 'Windows 11 (Dev Channel)', icon: 'Terminal' },
     { label: 'Kernel', value: 'Developer Mode / WSL2 Ubuntu 24.04', icon: 'Cpu' },
-    { label: 'CPU', value: 'Computer Science Engineering (Pre-Final Year)', icon: 'GraduationCap' },
+    { label: 'CPU', value: 'Computer Science Engineering (Second Year)', icon: 'GraduationCap' },
     { label: 'Shell', value: 'PowerShell 7.4 / zsh 5.9', icon: 'Code2' },
     { label: 'Editor', value: 'VS Code + Neovim (NvChad)', icon: 'FileCode' },
-    { label: 'Uptime', value: 'Building cool stuff since 2022', icon: 'Clock' },
+    { label: 'Uptime', value: 'Building cool stuff since 2008', icon: 'Clock' },
     { label: 'Location', value: 'Chennai, India (UTC+5:30)', icon: 'MapPin' },
     { label: 'Memory', value: '16.0 GiB (7.2 GiB Coffee + RAM)', icon: 'Database' },
   ],
@@ -46,18 +48,18 @@ export const ASCII_ARTS = {
    (_|     |_)
       |___|
      (_____)
-  [ nagul@workstation ]
+  [ retr0@workstation ]
 `,
   cyberRig: `
   .-------------------------------------.
   | [x] ~/workspace/terminal            |
   |-------------------------------------|
-  |  >_ NAGUL.DEV                       |
+  |  >_ RETR0.DEV                       |
   |     ┌──────────────────────────┐    |
   |     │ █   █   █   █   █   █    │    |
   |     │  SYSTEM READY: 100% OK   │    |
   |     └──────────────────────────┘    |
-  |  [CSE STUDENT] [BUILDER] [HACKER]   |
+  |  [CSE '29] [CYBERSEC] [BUILDER]     |
   '-------------------------------------'
         \\                     /
          \\___________________/
@@ -260,10 +262,10 @@ export const SKILL_PROGRESS = [
     color: '#CBA6F7', // purple
   },
   {
-    category: 'Systems/Linux',
-    progressBlocks: '██████████░░░░░░░',
-    percentage: 60,
-    highlightTech: 'Linux / Docker / Bash',
+    category: 'CyberSec & Linux',
+    progressBlocks: '████████████░░░░░',
+    percentage: 72,
+    highlightTech: 'Linux / Security / Bash',
     level: 'currently learning' as const,
     color: '#89B4FA', // blue
   },
@@ -291,16 +293,16 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: 'abc1234',
     message: 'feat(nerdy-site): launch customized terminal dashboard personal portfolio',
-    author: 'Nagul <nagul.dev@gmail.com>',
+    author: 'retr0 <sivphax08@gmail.com>',
     date: 'Just now',
     branch: 'main',
     changes: { added: 1420, removed: 0 },
-    diffSnippet: `+  export default function App() {\n+    return <TerminalDashboard config="Nagul08/nerdy-site" />;\n+  }`,
+    diffSnippet: `+  export default function App() {\n+    return <TerminalDashboard config="Nagul08/nerdy-site" user="retr0" />;\n+  }`,
   },
   {
     hash: '91fa221',
     message: 'refactor(terminal): optimize command parser and auto-suggestion trie',
-    author: 'Nagul <nagul.dev@gmail.com>',
+    author: 'retr0 <sivphax08@gmail.com>',
     date: '1 day ago',
     branch: 'main',
     changes: { added: 84, removed: 35 },
@@ -309,7 +311,7 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: '72bc981',
     message: 'perf(cache): achieve O(1) LRU eviction with doubly linked hash map',
-    author: 'Nagul <nagul.dev@gmail.com>',
+    author: 'retr0 <sivphax08@gmail.com>',
     date: '3 days ago',
     branch: 'feat/lru-optimization',
     changes: { added: 215, removed: 89 },
@@ -318,7 +320,7 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: 'e45b809',
     message: 'docs(readme): add interactive architectural diagram and benchmarks',
-    author: 'Nagul <nagul.dev@gmail.com>',
+    author: 'retr0 <sivphax08@gmail.com>',
     date: '5 days ago',
     branch: 'main',
     changes: { added: 76, removed: 12 },
@@ -327,7 +329,7 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: '3f89a1c',
     message: 'fix(net): handle graceful websocket reconnection backoff algorithm',
-    author: 'Nagul <nagul.dev@gmail.com>',
+    author: 'retr0 <sivphax08@gmail.com>',
     date: '1 week ago',
     branch: 'main',
     changes: { added: 43, removed: 19 },
@@ -336,7 +338,7 @@ export const GIT_COMMITS: GitCommit[] = [
   {
     hash: '6c10e42',
     message: 'init(repo): initialize nerdy-site workspace with Vite + React 19',
-    author: 'Nagul <nagul.dev@gmail.com>',
+    author: 'retr0 <sivphax08@gmail.com>',
     date: '2 weeks ago',
     branch: 'main',
     changes: { added: 340, removed: 0 },
@@ -359,8 +361,8 @@ export const SOCIAL_LINKS = [
     id: 'linkedin',
     platform: 'LinkedIn',
     command: '$ connect --linkedin',
-    url: 'https://linkedin.com/in/nagul',
-    handle: 'in/nagul',
+    url: 'https://www.linkedin.com/in/siva-kowsik-s-b490b437b/',
+    handle: 'in/siva-kowsik-s',
     desc: 'Connect professionally & career updates',
     icon: 'Linkedin',
     color: '#89B4FA',
@@ -369,8 +371,8 @@ export const SOCIAL_LINKS = [
     id: 'instagram',
     platform: 'Instagram',
     command: '$ connect --instagram',
-    url: 'https://instagram.com/nagul_dev',
-    handle: '@nagul_dev',
+    url: 'https://instagram.com/nagul_08_x_',
+    handle: '@nagul_08_x_',
     desc: 'Dev setups, tech desk rices & stories',
     icon: 'Instagram',
     color: '#F5C2E7',
@@ -379,8 +381,8 @@ export const SOCIAL_LINKS = [
     id: 'discord',
     platform: 'Discord',
     command: '$ connect --discord',
-    url: 'https://discord.com/users/nagul',
-    handle: 'nagul#0001 (nagul.dev)',
+    url: 'https://discord.com/users/itz_nagul_08_',
+    handle: 'itz_nagul_08_',
     desc: 'Chat about code, systems & Linux',
     icon: 'MessageSquare',
     color: '#CBA6F7',
@@ -389,8 +391,8 @@ export const SOCIAL_LINKS = [
     id: 'email',
     platform: 'Email',
     command: '$ connect --email',
-    url: 'mailto:nagul.dev@gmail.com',
-    handle: 'nagul.dev@gmail.com',
+    url: 'mailto:sivphax08@gmail.com',
+    handle: 'sivphax08@gmail.com',
     desc: 'Direct email transmission for opportunities',
     icon: 'Mail',
     color: '#A6E3A1',
@@ -420,7 +422,7 @@ export const AUDIO_TRACKS: AudioTrack[] = [
     id: 'track-3',
     title: 'Midnight Compiler',
     artist: 'Lo-Fi Coding Beats',
-    album: 'Night Owls at Anna Univ',
+    album: 'Night Owls at Sri Sairam',
     duration: 240,
     bpm: 78,
     genre: 'Lo-Fi Ambient',
@@ -440,70 +442,72 @@ export const ABOUT_TABS = [
   {
     file: 'about.txt',
     label: 'about.txt',
-    content: `Hi, I'm Nagul.
+    content: `Hi, I'm Siva Kowsik S -AKA- Nagul.
 
 I'm a Computer Science Engineering student who enjoys
 building things for the web, experimenting with technology,
 and occasionally breaking perfectly functional systems
 just to understand why they work.
 
-When I'm not writing code, you'll find me customizing my Linux
-development setup, testing new developer tools, or researching
-how operating systems handle memory and scheduling behind the scenes.`,
-    meta: '-rw-r--r-- 1 nagul staff 482B Sep 19 14:20 about.txt',
+When I'm not writing code, you'll find me cranking my Linux
+development setup, surfing cyber security sites, testing new
+developer tools, or researching how operating systems handle
+memory and scheduling behind the scenes or just penetrating (systems).`,
+    meta: '-rw-r--r-- 1 retr0 staff 512B Sep 19 15:51 about.txt',
   },
   {
     file: 'education.json',
     label: 'education.json',
     content: `{
-  "institution": "Anna University Affiliated College, Chennai",
-  "degree": "Bachelor of Engineering (B.E.)",
+  "officialName": "Siva Kowsik S",
+  "preferredName": "Nagul",
+  "institution": "Sri Sairam Engineering College",
+  "degree": "B.E. CSE",
   "major": "Computer Science & Engineering",
-  "expectedGraduation": "2026",
+  "expectedGraduation": "2029",
   "keyCourses": [
+    "Cyber Security",
     "Data Structures & Algorithms",
-    "Operating Systems & Virtualization",
+    "Operating Systems",
     "Database Management Systems",
-    "Computer Networks & Protocols",
-    "Compiler Design & Automata",
-    "Software Engineering & Agile"
+    "Computer Networks"
   ],
-  "standing": "Top 10% in Department",
+  "standing": "Second Year Engineering",
   "activities": [
-    "Open Source Contributor",
-    "College Hackathon Finalist",
-    "Linux Users Group Member"
+    "Cyber Security Research & CTFs",
+    "Linux Systems Customization",
+    "Full-Stack Web Development"
   ]
 }`,
-    meta: '-rw-r--r-- 1 nagul staff 590B Sep 19 14:21 education.json',
+    meta: '-rw-r--r-- 1 retr0 staff 620B Sep 19 15:51 education.json',
   },
   {
     file: 'philosophy.md',
     label: 'philosophy.md',
-    content: `# Engineering Philosophy
+    content: `# Engineering & Security Philosophy
 
-1. **Depth over surface:** Don't just import a library; inspect its source. Understand the cost of abstractions.
-2. **Keyboard-first Ergonomics:** Speed in thought requires speed in tooling. Monospace fonts, vim keybindings, and automated dotfiles.
-3. **Resilience & Fault Tolerance:** Software breaks. Write code that fails gracefully with informative logging and clean fallbacks.
-4. **Curiosity is the fuel:** Best projects come from asking "What if we rewrote this in Python?" or "Can we visualize this in the browser?"`,
-    meta: '-rw-r--r-- 1 nagul staff 640B Sep 19 14:22 philosophy.md',
+1. **Break to Understand:** The best way to secure or build a system is to understand how it breaks under pressure.
+2. **Depth over surface:** Inspect the source code, trace the network packets, and analyze system calls.
+3. **Keyboard-first Ergonomics:** Speed in thought requires speed in tooling. Monospace fonts, vim keybindings, and automated dotfiles.
+4. **Resilience & Fault Tolerance:** Build defensive systems that anticipate failures and malicious vectors gracefully.`,
+    meta: '-rw-r--r-- 1 retr0 staff 640B Sep 19 15:51 philosophy.md',
   },
   {
     file: 'workstation.conf',
     label: 'workstation.conf',
     content: `[hardware]
-machine   = Asus ZenBook Pro / Custom Dual Boot
-cpu       = Intel Core i7 14-Cores
-ram       = 16GB DDR5 4800MHz
-display   = 2.8K OLED 120Hz
+machine   = Asus / Custom Workstation
+cpu       = Multi-Core Developer Rig
+ram       = 16GB DDR5 High-Speed Memory
+display   = High-Refresh Developer Display
 
 [software]
 os_primary    = Windows 11 Pro (WSL2 Ubuntu 24.04 LTS)
 os_secondary  = Arch Linux (Hyprland Wayland)
 shell         = PowerShell 7.4 + Oh-My-Posh / zsh + starship
 terminal      = Windows Terminal / Kitty
-editor        = VS Code (Catppuccin Mocha) + Neovim
+editor        = VS Code (Catppuccin Mocha) + Neovim (NvChad)
 font          = JetBrains Mono Nerd Font 11pt`,
-    meta: '-rw-r--r-- 1 nagul staff 512B Sep 19 14:23 workstation.conf',
+    meta: '-rw-r--r-- 1 retr0 staff 540B Sep 19 15:51 workstation.conf',
   },
 ]
