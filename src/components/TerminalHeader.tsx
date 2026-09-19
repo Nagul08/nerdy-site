@@ -214,48 +214,6 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             )}
           </div>
 
-          {/* Quick 1-Click Old TV Glow Toggle */}
-          <button
-            onClick={() => {
-              soundFx.playClick('enter')
-              onToggleTvGlow()
-            }}
-            style={{
-              borderColor: tvGlowEnabled ? activeThemeConfig.primaryHex + '70' : '#232a40',
-              color: tvGlowEnabled ? activeThemeConfig.primaryHex : '#94A3B8',
-            }}
-            className={`px-2 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] border text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
-              tvGlowEnabled ? 'bg-accent-soft' : ''
-            }`}
-            title={`Toggle Old TV Phosphor Glow (${tvGlowEnabled ? 'Active' : 'Disabled'})`}
-          >
-            <Tv className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px] font-semibold">
-              TV {tvGlowEnabled ? 'ON' : 'OFF'}
-            </span>
-          </button>
-
-          {/* Quick 1-Click CRT Scanlines Toggle */}
-          <button
-            onClick={() => {
-              soundFx.playClick('tab')
-              onToggleCrt()
-            }}
-            style={{
-              borderColor: crtScanlinesEnabled ? activeThemeConfig.primaryHex + '70' : '#232a40',
-              color: crtScanlinesEnabled ? activeThemeConfig.primaryHex : '#94A3B8',
-            }}
-            className={`px-2 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] border text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
-              crtScanlinesEnabled ? 'bg-accent-soft' : ''
-            }`}
-            title={`Toggle CRT Scanlines & Rolling Beam (${crtScanlinesEnabled ? 'Active' : 'Disabled'})`}
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px] font-semibold">
-              CRT {crtScanlinesEnabled ? 'ON' : 'OFF'}
-            </span>
-          </button>
-
           <a
             href="https://github.com/Nagul08"
             target="_blank"

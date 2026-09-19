@@ -21,11 +21,11 @@ export default function App() {
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(() => getRandomTheme())
   const [tvGlowEnabled, setTvGlowEnabled] = useState<boolean>(() => {
     const saved = localStorage.getItem('niko_tv_glow_enabled')
-    return saved !== null ? saved === 'true' : true
+    return saved !== null ? saved === 'true' : false
   })
   const [crtScanlinesEnabled, setCrtScanlinesEnabled] = useState<boolean>(() => {
     const saved = localStorage.getItem('niko_crt_scanlines_enabled')
-    return saved !== null ? saved === 'true' : true
+    return saved !== null ? saved === 'true' : false
   })
 
   // Trigger animation flash states for tactile power-on / degauss feedback

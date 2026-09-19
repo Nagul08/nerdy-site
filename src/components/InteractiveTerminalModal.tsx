@@ -41,9 +41,9 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
   onToggleMatrix,
   onChangeTheme,
   onReplayIntro,
-  tvGlowEnabled = true,
+  tvGlowEnabled = false,
   onToggleTvGlow,
-  crtScanlinesEnabled = true,
+  crtScanlinesEnabled = false,
   onToggleCrt,
 }) => {
   const [inputVal, setInputVal] = useState('')
