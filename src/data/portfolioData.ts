@@ -104,6 +104,44 @@ export const PROJECTS: Project[] = [
       version: 'v1.0.0',
     },
   },
+  {
+    id: 'packet-sniffer-cli',
+    name: 'packet-sniffer-cli',
+    folder: 'packet-sniffer',
+    tagline: 'Low-level raw socket packet sniffer & network protocol inspector',
+    description:
+      'Terminal-based packet analyzer capturing live Ethernet, IP, TCP, and UDP frames via raw sockets. Features real-time packet filtering, payload hex dump decoding, and pcap export capabilities.',
+    tech: ['Python', 'C', 'Raw Sockets', 'Network Protocols', 'Linux'],
+    category: 'systems',
+    githubUrl: 'https://github.com/Nagul08',
+    stars: 38,
+    commits: 19,
+    featured: true,
+    stats: {
+      language: 'Python / C',
+      linesOfCode: '1.2k lines',
+      version: 'v0.8.2',
+    },
+  },
+  {
+    id: 'cipher-vault',
+    name: 'cipher-vault',
+    folder: 'cipher-vault',
+    tagline: 'Cryptographic file encryption CLI with entropy inspection & key derivation',
+    description:
+      'Command-line security utility providing authenticated encryption (AES-256-GCM), Argon2id key derivation, file entropy visualization for malware analysis, and cryptographic digest verification.',
+    tech: ['C / C++', 'Cryptography', 'Argon2', 'POSIX', 'Make'],
+    category: 'tools',
+    githubUrl: 'https://github.com/Nagul08',
+    stars: 29,
+    commits: 14,
+    featured: true,
+    stats: {
+      language: 'C / C++',
+      linesOfCode: '1.8k lines',
+      version: 'v0.5.0',
+    },
+  },
 ]
 
 export const SKILL_PROGRESS = [

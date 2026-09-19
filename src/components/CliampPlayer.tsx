@@ -82,7 +82,31 @@ const EQ_FREQUENCIES = [
 
 type VisualizerMode = 'spectrum' | 'vumeter' | 'oscilloscope'
 
-export const CliampPlayer: React.FC = () => {
+export interface CliampPlayerProps {
+  isFloating?: boolean
+  isExpanded?: boolean
+  onToggleExpand?: () => void
+  onPlaybackChange?: (playing: boolean) => void
+}
+
+export const CliampPlayer: React.FC<CliampPlayerProps> = ({
+  isFloating = true,
+  isExpanded: externalExpanded,
+  onToggleExpand,
+  onPlaybackChange,
+}) => {
+  const [internalExpanded, setInternalExpanded] = useState(false)
+  const isExpanded = externalExpanded !== undefined ? externalExpanded : internalExpanded
+
+  const toggleExpand = () => {
+    soundFx.playClick('key')
+    if (onToggleExpand) {
+      onToggleExpand()
+    } else {
+      setInternalExpanded((prev) => !prev)
+    }
+  }
+
   const [stationIndex, setStationIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -95,6 +119,10 @@ export const CliampPlayer: React.FC = () => {
   const [customUrlInput, setCustomUrlInput] = useState('')
   const [showCustomInput, setShowCustomInput] = useState(false)
   const [streamError, setStreamError] = useState<string | null>(null)
+
+  useEffect(() => {
+    onPlaybackChange?.(isPlaying)
+  }, [isPlaying, onPlaybackChange])
 
   // Visualizer Mode and Peak Hold toggles
   const [visMode, setVisMode] = useState<VisualizerMode>('spectrum')
@@ -517,7 +545,83 @@ export const CliampPlayer: React.FC = () => {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
 
-  return (
+  if (isFloating && !isExpanded) {
+    return (
+      <div className="fixed bottom-4 right-4 z-40 bg-[#0A0C14]/95 border-2 border-[#8BE9FD]/60 backdrop-blur-md rounded-sm p-2 sm:px-3 sm:py-2.5 shadow-2xl shadow-black/80 font-mono text-xs flex items-center gap-2.5 sm:gap-3 select-none text-[#D8DEE9] animate-fade-in group">
+        {/* Tactical corner brackets */}
+        <span className="absolute top-0 left-0 text-[#8BE9FD] text-[8px] pointer-events-none select-none leading-none opacity-80">┌─</span>
+        <span className="absolute top-0 right-0 text-[#8BE9FD] text-[8px] pointer-events-none select-none leading-none opacity-80">─┐</span>
+        <span className="absolute bottom-0 left-0 text-[#8BE9FD] text-[8px] pointer-events-none select-none leading-none opacity-80">└─</span>
+        <span className="absolute bottom-0 right-0 text-[#8BE9FD] text-[8px] pointer-events-none select-none leading-none opacity-80">─┘</span>
+
+        {/* Live animated spectrum bars (mini) */}
+        <div className="flex items-end space-x-0.5 h-4 w-5 shrink-0">
+          {spectrumBars.slice(0, 5).map((val, i) => (
+            <span
+              key={i}
+              style={{ height: isPlaying ? `${Math.max(20, (val / 8) * 100)}%` : '20%' }}
+              className="w-1 bg-[#A6E3A1] rounded-xs transition-all duration-75"
+            />
+          ))}
+        </div>
+
+        {/* Station name & frequency */}
+        <div className="flex flex-col min-w-0 max-w-[120px] sm:max-w-[180px]">
+          <span className="text-[#8BE9FD] font-bold text-xs truncate">
+            {currentStation.name.split('//')[1]?.trim() || currentStation.name}
+          </span>
+          <div className="text-[10px] text-[#7F849C] flex items-center gap-1.5 leading-none mt-0.5">
+            <span className="text-[#A6E3A1] font-semibold">{currentStation.freq}</span>
+            <span>•</span>
+            <span className={isPlaying ? 'text-[#A6E3A1]' : 'text-[#7F849C]'}>
+              {isLoading ? 'SYNC...' : isPlaying ? 'LIVE' : 'STANDBY'}
+            </span>
+          </div>
+        </div>
+
+        {/* Play / Pause button */}
+        <button
+          onClick={handleTogglePlay}
+          className={`p-1.5 rounded cursor-pointer transition-colors ${
+            isPlaying
+              ? 'bg-[#F38BA8]/20 text-[#F38BA8] border border-[#F38BA8]/50 hover:bg-[#F38BA8]/30'
+              : 'bg-[#A6E3A1]/20 text-[#A6E3A1] border border-[#A6E3A1]/50 hover:bg-[#A6E3A1]/30'
+          }`}
+          title={isPlaying ? 'Pause Lo-Fi Stream' : 'Play Lo-Fi Stream'}
+        >
+          {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+        </button>
+
+        {/* Volume wheel container */}
+        <div
+          ref={volumeContainerRef}
+          className="hidden sm:flex items-center space-x-1.5 bg-[#07090F] px-2 py-1 rounded border border-[#1E2438] cursor-ns-resize hover:border-[#8BE9FD]/40 transition-colors"
+          title="Scroll mouse wheel here to adjust volume"
+        >
+          {isMuted || volume === 0 ? (
+            <VolumeX className="w-3 h-3 text-[#F38BA8]" />
+          ) : (
+            <Volume2 className="w-3 h-3 text-[#8BE9FD]" />
+          )}
+          <span className="text-[10px] text-[#D8DEE9] tabular-nums font-bold">
+            {isMuted ? '0%' : `${volume}%`}
+          </span>
+        </div>
+
+        {/* Expand HUD button */}
+        <button
+          onClick={toggleExpand}
+          className="px-2 py-1 rounded bg-[#CBA6F7]/20 border border-[#CBA6F7]/50 text-[#CBA6F7] hover:bg-[#CBA6F7]/30 text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
+          title="Expand Full MGS2 Codec & Audio HUD"
+        >
+          <Maximize2 className="w-3 h-3" />
+          <span className="hidden sm:inline">HUD</span>
+        </button>
+      </div>
+    )
+  }
+
+  const content = (
     <div className="relative border-2 border-[#282C3F] bg-[#0E101A] rounded-sm font-mono shadow-2xl overflow-hidden text-[#D8DEE9]">
       {/* MGS2 Tactical Corner Reticle Accents */}
       <span className="absolute top-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
@@ -581,12 +685,18 @@ export const CliampPlayer: React.FC = () => {
           <button
             onClick={() => {
               soundFx.playClick('key')
-              setIsMinimized(!isMinimized)
+              if (isFloating) {
+                toggleExpand()
+              } else {
+                setIsMinimized(!isMinimized)
+              }
             }}
             className="p-1 text-[#7F849C] hover:text-[#8BE9FD] hover:bg-[#1C2034] rounded border border-transparent hover:border-[#282C3F] cursor-pointer"
-            title={isMinimized ? 'Expand Codec' : 'Minimize Codec'}
+            title={isFloating ? 'Minimize to Dock' : isMinimized ? 'Expand Codec' : 'Minimize Codec'}
           >
-            {isMinimized ? (
+            {isFloating ? (
+              <Minimize2 className="w-3.5 h-3.5" />
+            ) : isMinimized ? (
               <Maximize2 className="w-3 h-3" />
             ) : (
               <Minimize2 className="w-3 h-3" />
@@ -1251,4 +1361,16 @@ export const CliampPlayer: React.FC = () => {
       </div>
     </div>
   )
+
+  if (isFloating && isExpanded) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-sm animate-fade-in">
+        <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto relative shadow-2xl rounded-sm">
+          {content}
+        </div>
+      </div>
+    )
+  }
+
+  return content
 }

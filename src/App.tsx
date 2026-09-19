@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { TerminalHeader } from './components/TerminalHeader'
 import { HeroSystemInfo } from './components/HeroSystemInfo'
-import { AboutSection } from './components/AboutSection'
 import { ProjectsSection } from './components/ProjectsSection'
 import { SkillsSection } from './components/SkillsSection'
-// import { GitHubSection } from './components/GitHubSection' // TODO: Stashed for future heatmap overhaul
+import { AboutSection } from './components/AboutSection'
 import { SocialSection } from './components/SocialSection'
 import { ContactSection } from './components/ContactSection'
 import { InteractiveTerminalModal } from './components/InteractiveTerminalModal'
@@ -18,6 +17,8 @@ import { soundFx } from './utils/audio'
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [isTerminalOpen, setIsTerminalOpen] = useState(false)
+  const [isRadioExpanded, setIsRadioExpanded] = useState(false)
+  const [isRadioPlaying, setIsRadioPlaying] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<ThemeName>('catppuccin')
   const [crtEnabled, setCrtEnabled] = useState(false)
   const [matrixActive, setMatrixActive] = useState(false)
@@ -27,7 +28,7 @@ export default function App() {
 
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ['home', 'audio', 'about', 'projects', 'skills', 'social', 'contact']
+    const sectionIds = ['home', 'projects', 'skills', 'about', 'contact', 'social']
     const observers: IntersectionObserver[] = []
 
     sectionIds.forEach((id) => {
@@ -41,7 +42,7 @@ export default function App() {
               }
             })
           },
-          { rootMargin: '-80px 0px -40% 0px', threshold: 0.1 }
+          { rootMargin: '-60px 0px -40% 0px', threshold: 0.1 }
         )
         observer.observe(el)
         observers.push(observer)
@@ -64,12 +65,13 @@ export default function App() {
       } else if (e.key === 'Escape') {
         if (matrixActive) setMatrixActive(false)
         if (isTerminalOpen) setIsTerminalOpen(false)
+        if (isRadioExpanded) setIsRadioExpanded(false)
       }
     }
 
     window.addEventListener('keydown', handleGlobalKeyDown)
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
-  }, [matrixActive, isTerminalOpen])
+  }, [matrixActive, isTerminalOpen, isRadioExpanded])
 
   const scrollToSection = (sectionId: string) => {
     if (sectionId === 'home') {
@@ -77,10 +79,16 @@ export default function App() {
       setActiveSection('home')
       return
     }
+
+    if (sectionId === 'audio' || sectionId === 'radio') {
+      setIsRadioExpanded(true)
+      return
+    }
+
     const target = document.getElementById(sectionId)
     if (target) {
       const header = document.querySelector('header')
-      const headerHeight = header ? header.offsetHeight : 80
+      const headerHeight = header ? header.offsetHeight : 56
       const elementPosition = target.getBoundingClientRect().top
       const offsetPosition = elementPosition + window.scrollY - headerHeight - 16
       window.scrollTo({
@@ -105,7 +113,7 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen bg-[#0D0F18] text-[#D8DEE9] font-mono relative ${themeClasses[currentTheme]}`}>
+    <div className={`min-h-screen bg-[#0A0C14] text-[#D8DEE9] font-mono relative ${themeClasses[currentTheme]}`}>
       {/* Optional CRT Scanlines Effect */}
       {crtEnabled && (
         <div className="fixed inset-0 crt-overlay z-50 pointer-events-none" />
@@ -120,7 +128,7 @@ export default function App() {
         onClose={() => setShowIntro(false)}
       />
 
-      {/* Top Terminal Header with Navigation and System Controls */}
+      {/* Top Terminal Header: Unified Single-Bar Cyber Navbar */}
       <TerminalHeader
         activeSection={activeSection}
         onNavigate={scrollToSection}
@@ -131,62 +139,57 @@ export default function App() {
         onToggleCrt={() => setCrtEnabled((prev) => !prev)}
         onToggleMatrix={() => setMatrixActive((prev) => !prev)}
         onReplayIntro={() => setShowIntro(true)}
+        isRadioPlaying={isRadioPlaying}
+        onToggleRadioHud={() => setIsRadioExpanded((prev) => !prev)}
       />
 
       {/* Main Content Area */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12 space-y-8">
-        {/* Hero / System Information (fastfetch) */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-20 space-y-10">
+        {/* 1. Hero / High-Impact Dossier & MGS2 Dante Avatar */}
         <HeroSystemInfo
           onNavigate={scrollToSection}
           onOpenTerminal={() => setIsTerminalOpen(true)}
         />
 
-        {/* CLiAMP Retro Audio Player (Icecast/Shoutcast Online Radio) */}
-        <section id="audio" className="scroll-mt-28 space-y-2">
-          <div className="flex items-center justify-between text-xs text-[#7F849C] px-1 font-mono">
-            <div className="flex items-center space-x-2">
-              <span className="text-[#CBA6F7]">01.5 //</span>
-              <span className="text-[#D8DEE9] font-bold">AUDIO SUBSYSTEM (CLIAMP TUI STREAMER)</span>
-            </div>
-            <span className="text-[11px] text-[#A6E3A1]">icecast/shoutcast • 128kbps stereo</span>
-          </div>
-          <CliampPlayer />
-        </section>
+        {/* 2. Featured Projects: Proof of skills first! */}
+        <ProjectsSection />
 
-        {/* About Me Section & Systemctl Status Banner */}
-        <section id="about" className="scroll-mt-28 space-y-4">
-          <div className="p-3 bg-[#0A0C14] border border-[#23283E] rounded-sm text-xs text-[#7F849C] flex items-center justify-between font-mono">
+        {/* 3. Skills Matrix: Clear, categorized capabilities */}
+        <SkillsSection />
+
+        {/* 4. About & System Status Dossier */}
+        <section id="about" className="scroll-mt-24 space-y-4">
+          <div className="p-3 bg-[#080A10] border border-[#23283E] rounded-sm text-xs text-[#7F849C] flex items-center justify-between font-mono">
             <div className="flex items-center space-x-2">
               <span className="text-[#A6E3A1]">systemctl:</span>
               <span className="text-[#D8DEE9]">portfolio.service loaded (active, running)</span>
             </div>
             <div className="hidden sm:flex items-center space-x-3 text-[11px]">
-              <span>memory: 1.2G/16G</span>
-              <span>tasks: 114</span>
+              <span className="text-[#8BE9FD]">node: niko-rax</span>
+              <span className="text-[#A6E3A1]">status: 200 OK</span>
             </div>
           </div>
           
           <AboutSection />
         </section>
 
-        {/* Projects Section */}
-        <ProjectsSection />
-
-        {/* Skills Section */}
-        <SkillsSection />
-
-        {/* GitHub Section - TODO: Stashed for future heatmap overhaul */}
-        {/* <GitHubSection /> */}
-
-        {/* Social Links Section */}
+        {/* 5. Social Channels */}
         <SocialSection />
 
-        {/* Contact Section */}
+        {/* 6. Contact Transmission Channel */}
         <ContactSection />
       </main>
 
       {/* Terminal Footer */}
       <TerminalFooter onScrollToTop={scrollToTop} />
+
+      {/* Floating CLiAMP Lo-Fi Cyber Mini-Dock / Expanded MGS2 HUD */}
+      <CliampPlayer
+        isFloating={true}
+        isExpanded={isRadioExpanded}
+        onToggleExpand={() => setIsRadioExpanded((prev) => !prev)}
+        onPlaybackChange={setIsRadioPlaying}
+      />
 
       {/* Floating Interactive Terminal Shell Drawer / Window */}
       <InteractiveTerminalModal
