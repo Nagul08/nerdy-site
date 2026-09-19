@@ -8,27 +8,20 @@ import { SocialSection } from './components/SocialSection'
 import { ContactSection } from './components/ContactSection'
 import { InteractiveTerminalModal } from './components/InteractiveTerminalModal'
 import { CliampPlayer } from './components/CliampPlayer'
-import { MatrixRain } from './components/MatrixRain'
 import { TerminalFooter } from './components/TerminalFooter'
 import { CryptoGlyphIntro } from './components/CryptoGlyphIntro'
-import type { ThemeName } from './types'
 import { soundFx } from './utils/audio'
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [isTerminalOpen, setIsTerminalOpen] = useState(false)
-  const [isRadioExpanded, setIsRadioExpanded] = useState(false)
-  const [isRadioPlaying, setIsRadioPlaying] = useState(false)
-  const [currentTheme, setCurrentTheme] = useState<ThemeName>('catppuccin')
-  const [crtEnabled, setCrtEnabled] = useState(false)
-  const [matrixActive, setMatrixActive] = useState(false)
   const [showIntro, setShowIntro] = useState(() => {
     return !sessionStorage.getItem('has_seen_niko_intro')
   })
 
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ['home', 'projects', 'skills', 'about', 'contact', 'social']
+    const sectionIds = ['home', 'projects', 'skills', 'about', 'social', 'contact']
     const observers: IntersectionObserver[] = []
 
     sectionIds.forEach((id) => {
@@ -57,31 +50,23 @@ export default function App() {
   // Keyboard shortcut listener (Ctrl + ~ or ~ to open CLI, Esc to close)
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Toggle terminal on ~ or Ctrl+~ (if not typing in an input)
       if ((e.key === '`' || e.key === '~') && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
         e.preventDefault()
         soundFx.playClick('enter')
         setIsTerminalOpen((prev) => !prev)
       } else if (e.key === 'Escape') {
-        if (matrixActive) setMatrixActive(false)
         if (isTerminalOpen) setIsTerminalOpen(false)
-        if (isRadioExpanded) setIsRadioExpanded(false)
       }
     }
 
     window.addEventListener('keydown', handleGlobalKeyDown)
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
-  }, [matrixActive, isTerminalOpen, isRadioExpanded])
+  }, [isTerminalOpen])
 
   const scrollToSection = (sectionId: string) => {
     if (sectionId === 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       setActiveSection('home')
-      return
-    }
-
-    if (sectionId === 'audio' || sectionId === 'radio') {
-      setIsRadioExpanded(true)
       return
     }
 
@@ -103,101 +88,58 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // Theme accent colors
-  const themeClasses: Record<ThemeName, string> = {
-    catppuccin: 'theme-catppuccin',
-    tokyo: 'theme-tokyo',
-    cyber: 'theme-cyber',
-    nord: 'theme-nord',
-    matrix: 'theme-matrix',
-  }
-
   return (
-    <div className={`min-h-screen bg-[#0A0C14] text-[#D8DEE9] font-mono relative ${themeClasses[currentTheme]}`}>
-      {/* Optional CRT Scanlines Effect */}
-      {crtEnabled && (
-        <div className="fixed inset-0 crt-overlay z-50 pointer-events-none" />
-      )}
-
-      {/* Matrix Rain Effect when toggled */}
-      <MatrixRain isActive={matrixActive} onClose={() => setMatrixActive(false)} />
-
-      {/* Crypto Glyph Opening Screen (retr0.blog inspiration) */}
+    <div className="min-h-screen bg-[#08090C] text-[#F8FAFC] font-mono selection:bg-[#00F0FF] selection:text-[#08090C]">
+      {/* Crypto Glyph Opening Screen */}
       <CryptoGlyphIntro
         isOpen={showIntro}
         onClose={() => setShowIntro(false)}
       />
 
-      {/* Top Terminal Header: Unified Single-Bar Cyber Navbar */}
+      {/* Top Navbar */}
       <TerminalHeader
         activeSection={activeSection}
         onNavigate={scrollToSection}
         onToggleTerminal={() => setIsTerminalOpen((prev) => !prev)}
-        currentTheme={currentTheme}
-        onChangeTheme={setCurrentTheme}
-        crtEnabled={crtEnabled}
-        onToggleCrt={() => setCrtEnabled((prev) => !prev)}
-        onToggleMatrix={() => setMatrixActive((prev) => !prev)}
-        onReplayIntro={() => setShowIntro(true)}
-        isRadioPlaying={isRadioPlaying}
-        onToggleRadioHud={() => setIsRadioExpanded((prev) => !prev)}
       />
 
       {/* Main Content Area */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-20 space-y-10">
-        {/* 1. Hero / High-Impact Dossier & MGS2 Dante Avatar */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-12">
+        {/* 1. Hero: Clean Dante Avatar, Official Name, Statement */}
         <HeroSystemInfo
           onNavigate={scrollToSection}
           onOpenTerminal={() => setIsTerminalOpen(true)}
         />
 
-        {/* 2. Featured Projects: Proof of skills first! */}
+        {/* 2. Featured Projects */}
         <ProjectsSection />
 
-        {/* 3. Skills Matrix: Clear, categorized capabilities */}
+        {/* 3. Skills & Arsenal */}
         <SkillsSection />
 
-        {/* 4. About & System Status Dossier */}
-        <section id="about" className="scroll-mt-24 space-y-4">
-          <div className="p-3 bg-[#080A10] border border-[#23283E] rounded-sm text-xs text-[#7F849C] flex items-center justify-between font-mono">
-            <div className="flex items-center space-x-2">
-              <span className="text-[#A6E3A1]">systemctl:</span>
-              <span className="text-[#D8DEE9]">portfolio.service loaded (active, running)</span>
-            </div>
-            <div className="hidden sm:flex items-center space-x-3 text-[11px]">
-              <span className="text-[#8BE9FD]">node: niko-rax</span>
-              <span className="text-[#A6E3A1]">status: 200 OK</span>
-            </div>
-          </div>
-          
-          <AboutSection />
-        </section>
+        {/* 4. About & Mindset */}
+        <AboutSection />
 
         {/* 5. Social Channels */}
         <SocialSection />
 
-        {/* 6. Contact Transmission Channel */}
+        {/* 6. Contact Form & Transmission */}
         <ContactSection />
       </main>
 
-      {/* Terminal Footer */}
+      {/* Clean Footer */}
       <TerminalFooter onScrollToTop={scrollToTop} />
 
-      {/* Floating CLiAMP Lo-Fi Cyber Mini-Dock / Expanded MGS2 HUD */}
-      <CliampPlayer
-        isFloating={true}
-        isExpanded={isRadioExpanded}
-        onToggleExpand={() => setIsRadioExpanded((prev) => !prev)}
-        onPlaybackChange={setIsRadioPlaying}
-      />
+      {/* Discreet, Ultra-Minimal Floating Lo-Fi Audio Pill */}
+      <CliampPlayer />
 
-      {/* Floating Interactive Terminal Shell Drawer / Window */}
+      {/* Interactive CLI Drawer (on ~ or CLI button) */}
       <InteractiveTerminalModal
         isOpen={isTerminalOpen}
         onClose={() => setIsTerminalOpen(false)}
         onNavigate={scrollToSection}
-        onToggleMatrix={() => setMatrixActive((prev) => !prev)}
-        onChangeTheme={setCurrentTheme}
+        onToggleMatrix={() => {}}
+        onChangeTheme={() => {}}
         onReplayIntro={() => setShowIntro(true)}
       />
     </div>

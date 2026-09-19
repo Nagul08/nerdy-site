@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Send, Mail, CheckCircle } from 'lucide-react'
-import { GithubIcon, LinkedinIcon, InstagramIcon } from './BrandIcons'
 import { soundFx } from '../utils/audio'
 
 export const ContactSection: React.FC = () => {
@@ -20,274 +19,155 @@ export const ContactSection: React.FC = () => {
     soundFx.playClick('enter')
     setIsTransmitting(true)
 
-    // Simulate terminal transmission delay
     setTimeout(() => {
       setIsTransmitting(false)
       setTransmitSuccess(true)
       soundFx.playClick('beep')
 
-      // Pre-fill mailto fallback
-      const mailtoLink = `mailto:nagul.dev@gmail.com?subject=${encodeURIComponent(
+      const mailtoLink = `mailto:sivphax08@gmail.com?subject=${encodeURIComponent(
         formData.subject
       )}&body=${encodeURIComponent(
         `From: ${formData.name} (${formData.email})\n\n${formData.message}`
       )}`
       window.open(mailtoLink, '_blank')
-    }, 1200)
+    }, 600)
   }
 
   return (
-    <section id="contact" className="py-6 sm:py-8 scroll-mt-28">
-      {/* Title */}
-      <div className="flex items-center space-x-2 font-mono text-sm sm:text-base text-[#8BE9FD] mb-3">
-        <span className="text-[#CBA6F7]">visitor@portfolio:~$</span>
-        <span className="text-[#F9E2AF] font-semibold">&gt; echo "Let's build something."</span>
-        <span className="w-2 h-4 bg-[#8BE9FD] animate-cursor inline-block" />
+    <section id="contact" className="py-8 scroll-mt-20 font-mono">
+      {/* Section Header */}
+      <div className="mb-6 pb-3 border-b border-[#1C2030]">
+        <div className="text-xs text-[#00F0FF] mb-1">// INBOX & OPPORTUNITIES</div>
+        <h2 className="text-2xl font-extrabold text-[#F8FAFC] tracking-tight">
+          Get in Touch
+        </h2>
       </div>
 
-      {/* Terminal Window Box */}
-      <div className="relative border-2 border-[#282C3F] bg-[#111420]/95 rounded-sm shadow-xl overflow-hidden font-mono">
-        {/* MGS2 Tactical Corner Reticle Accents */}
-        <span className="absolute top-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
-          ┌──
-        </span>
-        <span className="absolute top-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
-          ──┐
-        </span>
-        <span className="absolute bottom-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
-          └──
-        </span>
-        <span className="absolute bottom-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
-          ──┘
-        </span>
+      <div className="bg-[#0D0F17] border border-[#1C2030] rounded-lg p-6 sm:p-8 shadow-xl shadow-black/30">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Info Column */}
+          <div className="lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <h3 className="text-base font-bold text-[#F8FAFC] mb-2 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-[#00F0FF]" />
+                <span>Let's Build Something Together</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed mb-6">
+                I'm actively interested in systems programming internships, cyber security
+                collaborations, and open-source software projects. Whether you have an opportunity or
+                just want to talk tech, drop me a message.
+              </p>
 
-        {/* MGS2 Tactical Header Strip */}
-        <div className="bg-[#080B14] px-3 py-1 border-b border-[#1E2438] flex items-center justify-between text-[10px] font-mono text-[#7F849C] select-none">
-          <div className="flex items-center space-x-2">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#A6E3A1] animate-pulse" />
-            <span className="text-[#8BE9FD] font-bold tracking-wider">MGS2 // BURST TRANSMISSION LINK</span>
-            <span className="text-[#CBA6F7] text-[9px] bg-[#161B2E] px-1.5 py-0.2 rounded border border-[#2B314F]">
-              SEC-06
-            </span>
-          </div>
-          <span className="text-[#A6E3A1] font-mono font-bold bg-[#0D151F] px-1.5 py-0.5 rounded border border-[#A6E3A1]/30 text-[9px]">
-            140.85 MHz
-          </span>
-        </div>
-
-        {/* Titlebar */}
-        <div className="bg-[#181B28] px-4 py-2 border-b border-[#282C3F] flex items-center justify-between text-xs text-[#7F849C]">
-          <div className="flex items-center space-x-2">
-            <span className="w-3 h-3 rounded-full bg-[#F38BA8]" />
-            <span className="w-3 h-3 rounded-full bg-[#F9E2AF]" />
-            <span className="w-3 h-3 rounded-full bg-[#A6E3A1]" />
-            <span className="text-[#D8DEE9] ml-2">vim ~/transmission/dispatch.sh</span>
-          </div>
-          <span className="text-[#A6E3A1]">PORT: 587 (SMTP/SECURE)</span>
-        </div>
-
-        <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Direct channels left column */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="text-xs text-[#7F849C] pb-2 border-b border-[#1E2235]">
-              // DIRECT COMMUNICATION CHANNELS
-            </div>
-
-            <div className="space-y-2.5 text-xs">
-              {/* Email */}
-              <div className="p-3 rounded bg-[#090A10] border border-[#23283E] hover:border-[#8BE9FD]/50 transition-colors">
-                <div className="text-[10px] text-[#7F849C] flex items-center gap-1">
-                  <Mail className="w-3 h-3 text-[#A6E3A1]" />
-                  <span>EMAIL DIRECTORY</span>
+              <div className="space-y-3 text-xs">
+                <div className="bg-[#131624] p-3 rounded border border-[#22273C]">
+                  <div className="text-[#64748B] text-[11px]">DIRECT EMAIL</div>
+                  <a
+                    href="mailto:sivphax08@gmail.com"
+                    className="text-[#00F0FF] hover:underline font-medium text-sm mt-0.5 inline-block"
+                  >
+                    sivphax08@gmail.com
+                  </a>
                 </div>
-                <a
-                  href="mailto:sivphax08@gmail.com"
-                  className="text-sm font-bold text-[#8BE9FD] hover:underline block mt-0.5"
-                >
-                  sivphax08@gmail.com
-                </a>
-              </div>
 
-              {/* GitHub */}
-              <div className="p-3 rounded bg-[#090A10] border border-[#23283E] hover:border-[#8BE9FD]/50 transition-colors">
-                <div className="text-[10px] text-[#7F849C] flex items-center gap-1">
-                  <GithubIcon className="w-3.5 h-3.5 text-[#89B4FA]" />
-                  <span>GITHUB HANDLE</span>
+                <div className="bg-[#131624] p-3 rounded border border-[#22273C]">
+                  <div className="text-[#64748B] text-[11px]">LOCATION / AVAILABILITY</div>
+                  <div className="text-[#F1F5F9] font-medium mt-0.5">
+                    Open to Remote & Hybrid Roles
+                  </div>
                 </div>
-                <a
-                  href="https://github.com/Nagul08"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-bold text-[#D8DEE9] hover:underline block mt-0.5"
-                >
-                  github.com/Nagul08
-                </a>
-              </div>
 
-              {/* LinkedIn */}
-              <div className="p-3 rounded bg-[#090A10] border border-[#23283E] hover:border-[#8BE9FD]/50 transition-colors">
-                <div className="text-[10px] text-[#7F849C] flex items-center gap-1">
-                  <LinkedinIcon className="w-3.5 h-3.5 text-[#CBA6F7]" />
-                  <span>LINKEDIN PROFILE</span>
+                <div className="bg-[#131624] p-3 rounded border border-[#22273C]">
+                  <div className="text-[#64748B] text-[11px]">STATUS</div>
+                  <div className="text-[#10B981] font-semibold mt-0.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
+                    Available for Projects & Internships
+                  </div>
                 </div>
-                <a
-                  href="https://linkedin.com/in/nagul"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-bold text-[#D8DEE9] hover:underline block mt-0.5"
-                >
-                  linkedin.com/in/nagul
-                </a>
               </div>
-
-              {/* Instagram */}
-              <div className="p-3 rounded bg-[#090A10] border border-[#23283E] hover:border-[#8BE9FD]/50 transition-colors">
-                <div className="text-[10px] text-[#7F849C] flex items-center gap-1">
-                  <InstagramIcon className="w-3.5 h-3.5 text-[#F5C2E7]" />
-                  <span>INSTAGRAM UPDATES</span>
-                </div>
-                <a
-                  href="https://instagram.com/nagul_dev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-bold text-[#D8DEE9] hover:underline block mt-0.5"
-                >
-                  @nagul_dev
-                </a>
-              </div>
-            </div>
-
-            <div className="text-[11px] text-[#585B70] leading-relaxed pt-1">
-              Currently open for full-stack engineering internships, research collaborations, open-source projects, and technical discussions.
             </div>
           </div>
 
-          {/* Terminal Input Form right column */}
-          <div className="lg:col-span-7 bg-[#090A10] p-4 sm:p-5 rounded border border-[#1E2235]">
-            <div className="text-xs text-[#7F849C] mb-3 pb-2 border-b border-[#1E2235] flex items-center justify-between">
-              <span>$ ./send-transmission.sh --target=nagul</span>
-              <span className="text-[#A6E3A1]">STREAM: READY</span>
-            </div>
-
+          {/* Right Form Column */}
+          <div className="lg:col-span-7">
             {transmitSuccess ? (
-              <div className="py-8 text-center space-y-3">
-                <div className="inline-flex p-3 rounded-full bg-[#A6E3A1]/10 border border-[#A6E3A1]/40 text-[#A6E3A1]">
-                  <CheckCircle className="w-8 h-8" />
-                </div>
-                <div className="text-sm font-bold text-[#A6E3A1]">
-                  [ 200 OK: TRANSMISSION DELIVERED ]
-                </div>
-                <p className="text-xs text-[#D8DEE9] max-w-sm mx-auto">
-                  Thank you! Your message transmission has been staged. Opening mail client for direct verification.
+              <div className="bg-[#111422] border border-[#10B981]/40 rounded-lg p-6 text-center space-y-3">
+                <CheckCircle className="w-8 h-8 text-[#10B981] mx-auto animate-bounce" />
+                <h4 className="text-base font-bold text-[#F8FAFC]">Message Prepared</h4>
+                <p className="text-xs text-[#94A3B8] max-w-sm mx-auto">
+                  Your mail client has been opened with the prefilled message to{' '}
+                  <strong className="text-[#00F0FF]">sivphax08@gmail.com</strong>.
                 </p>
                 <button
-                  onClick={() => {
-                    soundFx.playClick('key')
-                    setTransmitSuccess(false)
-                    setFormData({
-                      name: '',
-                      email: '',
-                      subject: 'Project Collaboration',
-                      message: '',
-                    })
-                  }}
-                  className="mt-3 px-3 py-1.5 rounded bg-[#23283E] hover:bg-[#313754] text-xs text-[#8BE9FD] border border-[#3E4562] cursor-pointer"
+                  onClick={() => setTransmitSuccess(false)}
+                  className="px-4 py-1.5 rounded bg-[#1C2030] text-[#CBD5E1] hover:text-[#F8FAFC] text-xs font-semibold cursor-pointer transition-colors mt-2"
                 >
-                  $ ./reset-form.sh
+                  Send Another Message
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-3 text-xs">
-                <div>
-                  <label className="block text-[#7F849C] mb-1">
-                    <span className="text-[#8BE9FD]">const</span> name =
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    onFocus={() => soundFx.playClick('key')}
-                    placeholder='"Your Name / Team"'
-                    className="w-full bg-[#111420] border border-[#282C3F] focus:border-[#8BE9FD] rounded px-3 py-2 text-[#D8DEE9] outline-none font-mono transition-colors"
-                  />
+              <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1.5">Your Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Alex Hunter"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-[#111422] border border-[#22273C] focus:border-[#00F0FF] rounded px-3 py-2.5 text-[#F8FAFC] outline-none transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1.5">Your Email</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="name@company.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-[#111422] border border-[#22273C] focus:border-[#00F0FF] rounded px-3 py-2.5 text-[#F8FAFC] outline-none transition-colors"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-[#7F849C] mb-1">
-                    <span className="text-[#8BE9FD]">const</span> email =
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    onFocus={() => soundFx.playClick('key')}
-                    placeholder='"your.email@organization.com"'
-                    className="w-full bg-[#111420] border border-[#282C3F] focus:border-[#8BE9FD] rounded px-3 py-2 text-[#D8DEE9] outline-none font-mono transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[#7F849C] mb-1">
-                    <span className="text-[#CBA6F7]">const</span> subject =
-                  </label>
+                  <label className="block text-[#94A3B8] font-medium mb-1.5">Subject</label>
                   <input
                     type="text"
+                    required
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    onFocus={() => soundFx.playClick('key')}
-                    className="w-full bg-[#111420] border border-[#282C3F] focus:border-[#CBA6F7] rounded px-3 py-2 text-[#D8DEE9] outline-none font-mono transition-colors"
+                    className="w-full bg-[#111422] border border-[#22273C] focus:border-[#00F0FF] rounded px-3 py-2.5 text-[#F8FAFC] outline-none transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#7F849C] mb-1">
-                    <span className="text-[#F9E2AF]">const</span> message =
-                  </label>
+                  <label className="block text-[#94A3B8] font-medium mb-1.5">Message</label>
                   <textarea
                     rows={4}
                     required
+                    placeholder="Describe your idea, role, or proposal..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    onFocus={() => soundFx.playClick('key')}
-                    placeholder="Describe your project, team opportunity, or inquiry..."
-                    className="w-full bg-[#111420] border border-[#282C3F] focus:border-[#F9E2AF] rounded px-3 py-2 text-[#D8DEE9] outline-none font-mono transition-colors resize-none"
+                    className="w-full bg-[#111422] border border-[#22273C] focus:border-[#00F0FF] rounded px-3 py-2.5 text-[#F8FAFC] outline-none transition-colors resize-none"
                   />
                 </div>
 
-                <div className="pt-2 flex items-center justify-between">
-                  <span className="text-[11px] text-[#585B70] hidden sm:inline">
-                    EOF (Ctrl+Enter)
-                  </span>
-
-                  <button
-                    type="submit"
-                    disabled={isTransmitting}
-                    className="px-4 py-2 rounded bg-[#8BE9FD]/15 border border-[#8BE9FD]/50 text-[#8BE9FD] hover:bg-[#8BE9FD]/25 font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow-[#8BE9FD]/20"
-                  >
-                    {isTransmitting ? (
-                      <>
-                        <span className="w-3 h-3 border-2 border-[#8BE9FD] border-t-transparent rounded-full animate-spin" />
-                        <span>TRANSMITTING...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        <span>[ EXECUTE TRANSMISSION ]</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={isTransmitting}
+                  className="w-full py-2.5 rounded bg-[#00F0FF] hover:bg-[#38BDF8] disabled:opacity-50 text-[#08090C] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#00F0FF]/15"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{isTransmitting ? 'PREPARING TRANSMISSION...' : 'SEND MESSAGE'}</span>
+                </button>
               </form>
             )}
           </div>
-        </div>
 
-        {/* Footer status */}
-        <div className="bg-[#181B28] px-4 py-1.5 border-t border-[#282C3F] text-[11px] text-[#7F849C] flex items-center justify-between">
-          <span>-- INSERT --</span>
-          <span className="text-[#8BE9FD]">nagul@portfolio:~/transmission</span>
         </div>
       </div>
     </section>
