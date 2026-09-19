@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  }
+
+  body {
+    font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background-color: #0D0F18;
+    color: #D8DEE9;
+    min-height: 100vh;
+  }
+
+  /* Custom terminal scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0D0F18;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #282C3F;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #89B4FA;
+  }
+}
+
+/* Subtle CRT scanline effect (tasteful & optional) */
+.crt-overlay {
+  background: linear-gradient(
+    rgba(18, 16, 26, 0) 50%, 
+    rgba(0, 0, 0, 0.28) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+}
+
+.crt-overlay::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.4) 100%);
+  pointer-events: none;
+}
+
+/* Dot grid matrix */
+.terminal-grid {
+  background-image: radial-gradient(rgba(139, 233, 253, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Terminal text glow */
+.glow-cyan {
+  text-shadow: 0 0 10px rgba(139, 233, 253, 0.45);
+}
+.glow-purple {
+  text-shadow: 0 0 10px rgba(203, 166, 247, 0.45);
+}
+.glow-green {
+  text-shadow: 0 0 10px rgba(166, 227, 161, 0.45);
+}
+.glow-pink {
+  text-shadow: 0 0 10px rgba(245, 194, 231, 0.45);
+}
+
+/* Blinking terminal cursor */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.animate-cursor {
+  animation: blink 1s cubic-bezier(1, 0, 0, 1) infinite;
+}
+
+/* Theme accent variations */
+.theme-catppuccin {
+  --accent-primary: #CBA6F7;
+  --accent-secondary: #F5C2E7;
+}
+
+.theme-tokyo {
+  --accent-primary: #7AA2F7;
+  --accent-secondary: #BB9AF7;
+}
+
+.theme-cyber {
+  --accent-primary: #8BE9FD;
+  --accent-secondary: #50FA7B;
+}
+
+.theme-nord {
+  --accent-primary: #88C0D0;
+  --accent-secondary: #81A1C1;
+}
+
+.theme-matrix {
+  --accent-primary: #50FA7B;
+  --accent-secondary: #A6E3A1;
+}
+
+/* Smooth fade-in animation for modal and rain */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.18s ease-out forwards;
+}
