@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { Menu, X, Terminal, Palette, Tv, Monitor, Play, Radio } from 'lucide-react'
+import { Menu, X, Terminal, Palette, Tv, Monitor } from 'lucide-react'
 import { GithubIcon } from './BrandIcons'
 import { soundFx } from '../utils/audio'
 import danteImg from '../assets/danteX.jpg'
 import type { ThemeName } from '../types'
 import { THEMES, THEME_KEYS } from '../utils/themeConfig'
-import { useRadioPlayer } from '../utils/radioPlayer'
 
 interface TerminalHeaderProps {
   activeSection: string
@@ -32,7 +31,6 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false)
-  const { isPlaying, isLoading, togglePlay, currentStation } = useRadioPlayer()
 
   const navItems = [
     { id: 'home', label: 'Home' },
@@ -226,13 +224,13 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             <GithubIcon className="w-4 h-4" />
           </a>
 
-          {/* Desktop CLI Shell Button */}
+          {/* CLI Shell Button */}
           <button
             onClick={() => {
               soundFx.playClick('enter')
               onToggleTerminal()
             }}
-            className="hidden md:flex px-2.5 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] text-accent border border-accent-subtle hover:border-accent text-xs font-semibold items-center gap-1.5 transition-all cursor-pointer"
+            className="px-2.5 py-1 rounded bg-[#0f121d]/90 hover:bg-[#181d2e] text-accent border border-accent-subtle hover:border-accent text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             title="Interactive Terminal Shell (Ctrl + ~)"
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -240,48 +238,6 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
             <kbd className="hidden sm:inline-block text-[10px] text-[#64748B] bg-[#07090f] px-1 rounded border border-[#23283c]">
               ~
             </kbd>
-          </button>
-
-          {/* Mobile Audio Play/Pause Button (Replaces CLI on Mobile) */}
-          <button
-            onClick={() => {
-              soundFx.playClick('enter')
-              togglePlay()
-            }}
-            style={{
-              borderColor: isPlaying ? activeThemeConfig.primaryHex : 'rgba(var(--accent-rgb), 0.35)',
-            }}
-            className={`md:hidden px-2.5 py-1.5 rounded-lg bg-[#0f121d]/95 border text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer select-none shadow-sm ${
-              isPlaying
-                ? 'bg-accent-soft text-accent shadow-[0_0_14px_rgba(var(--accent-rgb),0.35)]'
-                : 'text-[#CBD5E1] hover:text-[#F8FAFC]'
-            }`}
-            title={isPlaying ? `Playing: ${currentStation.name}` : 'Play Lo-Fi Radio'}
-            aria-label="Toggle Lo-Fi Audio Stream"
-          >
-            {isLoading ? (
-              <span className="w-3.5 h-3.5 border-2 border-accent border-t-transparent rounded-full animate-spin inline-block" />
-            ) : isPlaying ? (
-              <div className="flex items-end space-x-0.5 h-3.5 w-3.5 justify-center pb-0.5">
-                <span
-                  style={{ backgroundColor: activeThemeConfig.primaryHex }}
-                  className="w-0.5 h-3.5 rounded-full animate-pulse"
-                />
-                <span
-                  style={{ backgroundColor: activeThemeConfig.primaryHex }}
-                  className="w-0.5 h-2 rounded-full animate-pulse delay-75"
-                />
-                <span
-                  style={{ backgroundColor: activeThemeConfig.primaryHex }}
-                  className="w-0.5 h-3 rounded-full animate-pulse delay-150"
-                />
-              </div>
-            ) : (
-              <Play className="w-3.5 h-3.5 fill-current text-accent" />
-            )}
-            <span className="text-[11px] font-bold tracking-tight">
-              {isLoading ? 'BUFF...' : isPlaying ? 'LO-FI' : 'PLAY'}
-            </span>
           </button>
 
           {/* Mobile hamburger menu */}
@@ -298,34 +254,9 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown with Staggered Entrance & Quick Controls */}
+      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-[#181B26] bg-[#070911]/98 backdrop-blur-xl px-4 py-3 space-y-1 animate-fade-in shadow-2xl">
-          {/* Active Radio Station Card on Mobile */}
-          <div className="p-2.5 mb-2 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Radio className={`w-4 h-4 ${isPlaying ? 'text-accent animate-pulse' : 'text-[#64748B]'}`} />
-              <div>
-                <div className="text-[11px] font-bold text-[#F8FAFC]">
-                  {currentStation.code} • {currentStation.name}
-                </div>
-                <div className="text-[10px] text-[#94A3B8]">{currentStation.genre}</div>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                soundFx.playClick('enter')
-                togglePlay()
-              }}
-              style={{ borderColor: isPlaying ? activeThemeConfig.primaryHex : 'rgba(255,255,255,0.2)' }}
-              className={`px-2 py-1 rounded text-[10px] font-bold border transition-colors cursor-pointer active:scale-95 ${
-                isPlaying ? 'bg-accent-soft text-accent' : 'bg-white/5 text-[#CBD5E1]'
-              }`}
-            >
-              {isPlaying ? 'PAUSE' : 'PLAY'}
-            </button>
-          </div>
-
           {navItems.filter((i) => i.id !== 'audio').map((item) => (
             <button
               key={item.id}
