@@ -8,11 +8,11 @@ import {
   Clock,
   MapPin,
   Database,
-  Sparkles,
   ArrowRight,
 } from 'lucide-react'
-import { SYSTEM_INFO, ASCII_ARTS } from '../data/portfolioData'
+import { SYSTEM_INFO } from '../data/portfolioData'
 import { soundFx } from '../utils/audio'
+import danteImg from '../assets/danteX.jpg'
 
 interface HeroSystemInfoProps {
   onNavigate: (section: string) => void
@@ -20,7 +20,6 @@ interface HeroSystemInfoProps {
 }
 
 export const HeroSystemInfo: React.FC<HeroSystemInfoProps> = ({ onNavigate, onOpenTerminal }) => {
-  const [activeAscii, setActiveAscii] = useState<'cyberRig' | 'developer' | 'abstractBot'>('cyberRig')
   const [copyFeedback, setCopyFeedback] = useState(false)
 
   const iconMap: Record<string, React.ReactNode> = {
@@ -79,42 +78,95 @@ Location: Chennai, India`
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
             
-            {/* Left ASCII Art Column */}
-            <div className="lg:col-span-5 flex flex-col items-center justify-center bg-[#090B12] p-4 sm:p-5 rounded border border-[#1E2235] relative group">
-              {/* ASCII switcher tabs */}
-              <div className="w-full flex items-center justify-between mb-2 pb-2 border-b border-[#1E2235] text-[11px] font-mono">
-                <span className="text-[#7F849C] flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-[#CBA6F7]" />
-                  <span>ASCII VISUALIZER</span>
-                </span>
-                <div className="flex space-x-1">
-                  {(['cyberRig', 'developer', 'abstractBot'] as const).map((key) => (
-                    <button
-                      key={key}
-                      onClick={() => {
-                        soundFx.playClick('key')
-                        setActiveAscii(key)
-                      }}
-                      className={`px-1.5 py-0.5 rounded text-[10px] transition-colors cursor-pointer ${
-                        activeAscii === key
-                          ? 'bg-[#8BE9FD]/20 text-[#8BE9FD] border border-[#8BE9FD]/40'
-                          : 'text-[#7F849C] hover:text-[#D8DEE9]'
-                      }`}
-                    >
-                      {key === 'cyberRig' ? 'RIG' : key === 'developer' ? 'DEV' : 'BOT'}
-                    </button>
-                  ))}
+            {/* Left Visualizer Column: MGS2 Codec danteX box */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-center bg-[#07090F] p-3 sm:p-4 rounded-sm border-2 border-[#1E2438] relative shadow-2xl shadow-black/80 group">
+              {/* MGS2 Codec Header Banner */}
+              <div className="w-full flex items-center justify-between mb-2.5 pb-2 border-b border-[#1E2438] text-[11px] font-mono select-none">
+                <div className="flex items-center space-x-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A6E3A1] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#A6E3A1]" />
+                  </span>
+                  <span className="text-[#A6E3A1] font-bold tracking-wider">CODEC // LINK</span>
+                </div>
+
+                <div className="flex items-center space-x-2 text-[10px]">
+                  <span className="text-[#7F849C] hidden sm:inline">FREQ</span>
+                  <span className="text-[#8BE9FD] font-bold bg-[#0F1424] px-2 py-0.5 rounded border border-[#8BE9FD]/30 font-mono tracking-wider">
+                    140.85 MHz
+                  </span>
+                  <span className="text-[#CBA6F7] text-[9px] px-1 py-0.5 rounded bg-[#1C2035] border border-[#2B314F]">
+                    MEM-1
+                  </span>
                 </div>
               </div>
 
-              {/* ASCII Canvas with subtle neon glow */}
-              <pre className="font-mono text-xs sm:text-sm text-[#8BE9FD] whitespace-pre select-none transition-all leading-tight drop-shadow-[0_0_8px_rgba(139,233,253,0.35)] overflow-x-auto max-w-full">
-                {ASCII_ARTS[activeAscii]}
-              </pre>
+              {/* MGS2 Tactical Frame with Corner Reticles & DanteX */}
+              <div className="relative w-full aspect-square max-w-[320px] sm:max-w-[340px] mx-auto rounded-xs overflow-hidden border border-[#2B334E] bg-[#04060A] shadow-inner group">
+                {/* Tactical Corner Brackets (MGS2 Style) */}
+                <div className="absolute top-2 left-2 text-[#8BE9FD] text-xs font-mono select-none pointer-events-none z-20 opacity-85 leading-none drop-shadow-[0_0_4px_#8BE9FD]">
+                  ┌──
+                </div>
+                <div className="absolute top-2 right-2 text-[#8BE9FD] text-xs font-mono select-none pointer-events-none z-20 opacity-85 leading-none drop-shadow-[0_0_4px_#8BE9FD]">
+                  ──┐
+                </div>
+                <div className="absolute bottom-9 left-2 text-[#8BE9FD] text-xs font-mono select-none pointer-events-none z-20 opacity-85 leading-none drop-shadow-[0_0_4px_#8BE9FD]">
+                  └──
+                </div>
+                <div className="absolute bottom-9 right-2 text-[#8BE9FD] text-xs font-mono select-none pointer-events-none z-20 opacity-85 leading-none drop-shadow-[0_0_4px_#8BE9FD]">
+                  ──┘
+                </div>
 
-              {/* Terminal prompt beneath ASCII */}
-              <div className="mt-3 pt-2 border-t border-[#1E2235] w-full text-center font-mono text-[11px] text-[#7F849C]">
-                <span className="text-[#A6E3A1]">status:</span> active_dev_mode <span className="text-[#585B70]">//</span> <span className="text-[#F9E2AF]">hash:</span> #7f001
+                {/* Tactical Target Indicator */}
+                <div className="absolute top-2.5 left-1/2 -translate-x-1/2 text-[9px] text-[#8BE9FD]/80 font-mono select-none pointer-events-none z-20 tracking-wider">
+                  + [ TARGET: RETR0 ] +
+                </div>
+
+                {/* DanteX Image */}
+                <img
+                  src={danteImg}
+                  alt="danteX.jpg - MGS2 Codec Operator Avatar"
+                  className="w-full h-full object-cover rounded-xs filter contrast-110 saturate-105 group-hover:scale-105 transition-transform duration-700"
+                />
+
+                {/* Subtle CRT Vignette overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#04060A]/90 via-transparent to-transparent pointer-events-none" />
+
+                {/* MGS2 Voice Transmission & Signal HUD */}
+                <div className="absolute bottom-0 inset-x-0 bg-[#080B14]/95 border-t border-[#1E2438] px-2.5 py-1.5 flex items-center justify-between text-[10px] font-mono z-20 backdrop-blur-xs">
+                  <div className="flex items-center space-x-1.5">
+                    <span className="text-[#8BE9FD] font-bold">TX:</span>
+                    {/* Animated voice transmission bars */}
+                    <div className="flex items-end space-x-0.5 h-3">
+                      <span className="w-1 bg-[#A6E3A1] h-1.5 animate-pulse" />
+                      <span className="w-1 bg-[#A6E3A1] h-3 animate-pulse delay-75" />
+                      <span className="w-1 bg-[#A6E3A1] h-2 animate-pulse delay-150" />
+                      <span className="w-1 bg-[#A6E3A1] h-3.5 animate-pulse delay-100" />
+                      <span className="w-1 bg-[#A6E3A1] h-1.5 animate-pulse delay-200" />
+                    </div>
+                    <span className="text-[#D8DEE9] text-[10px] font-medium ml-1">TRANSMITTING</span>
+                  </div>
+
+                  <div className="flex items-center space-x-1.5 text-[#CBA6F7]">
+                    <span className="text-[9px] text-[#7F849C]">SIG:</span>
+                    <span className="text-[10px] tracking-widest text-[#A6E3A1]">■■■■□</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* MGS2 Tactical Telemetry Footer */}
+              <div className="mt-2.5 pt-2 border-t border-[#1E2438] w-full font-mono text-[10px] text-[#7F849C] space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-[#A6E3A1] font-bold">OPERATOR:</span>
+                    <span className="text-[#D8DEE9] font-bold">Siva Kowsik S</span>
+                  </span>
+                  <span className="text-[#8BE9FD] font-semibold">CALLSIGN: retr0</span>
+                </div>
+                <div className="flex items-center justify-between text-[9px] text-[#585B70]">
+                  <span>SOLITON RADAR // CH-140.85</span>
+                  <span className="text-[#F9E2AF] font-bold">SEC-LEVEL: 05 [ACTIVE]</span>
+                </div>
               </div>
             </div>
 
