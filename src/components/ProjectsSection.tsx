@@ -74,10 +74,20 @@ export const ProjectsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Directory listing summary */}
-      <div className="text-xs font-mono text-[#7F849C] mb-4 bg-[#090B12] px-3 py-1.5 rounded border border-[#1E2235] flex items-center justify-between">
-        <span>total {filteredProjects.length} directories</span>
-        <span>drwxr-xr-x 2 retr0 staff 4096 Sep 19 2026</span>
+      {/* Directory listing summary with MGS2 Codec strip */}
+      <div className="text-xs font-mono text-[#7F849C] mb-4 bg-[#080B14] px-3 py-1.5 rounded border border-[#1E2438] flex items-center justify-between select-none">
+        <div className="flex items-center space-x-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#A6E3A1] animate-pulse" />
+          <span className="text-[#8BE9FD] font-bold">MGS2 // REPO_ARCHIVES</span>
+          <span className="text-[#585B70] hidden sm:inline">|</span>
+          <span className="hidden sm:inline">total {filteredProjects.length} directories</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-[#A6E3A1] font-mono text-[10px] bg-[#0D151F] px-1.5 py-0.5 rounded border border-[#A6E3A1]/30">
+            140.85 MHz
+          </span>
+          <span className="text-[#585B70] hidden md:inline">drwxr-xr-x 2 retr0</span>
+        </div>
       </div>
 
       {/* Projects Grid: Styled as Terminal Directory Cards */}
@@ -89,12 +99,25 @@ export const ProjectsSection: React.FC = () => {
               key={project.id}
               onMouseEnter={() => setHoveredProjectId(project.id)}
               onMouseLeave={() => setHoveredProjectId(null)}
-              className={`border transition-all duration-200 bg-[#111420]/95 rounded-sm p-4 sm:p-5 flex flex-col justify-between group relative overflow-hidden ${
+              className={`border-2 transition-all duration-200 bg-[#111420]/95 rounded-sm p-4 sm:p-5 flex flex-col justify-between group relative overflow-hidden ${
                 isHovered
                   ? 'border-[#8BE9FD]/70 shadow-lg shadow-[#8BE9FD]/10 -translate-y-0.5'
                   : 'border-[#282C3F] hover:border-[#3E4562]'
               }`}
             >
+              {/* MGS2 Tactical Corner Reticles */}
+              <span className="absolute top-0 left-0 text-[#8BE9FD] text-[10px] font-mono select-none pointer-events-none z-20 opacity-70 leading-none drop-shadow-[0_0_2px_#8BE9FD]">
+                ┌──
+              </span>
+              <span className="absolute top-0 right-0 text-[#8BE9FD] text-[10px] font-mono select-none pointer-events-none z-20 opacity-70 leading-none drop-shadow-[0_0_2px_#8BE9FD]">
+                ──┐
+              </span>
+              <span className="absolute bottom-0 left-0 text-[#8BE9FD] text-[10px] font-mono select-none pointer-events-none z-20 opacity-70 leading-none drop-shadow-[0_0_2px_#8BE9FD]">
+                └──
+              </span>
+              <span className="absolute bottom-0 right-0 text-[#8BE9FD] text-[10px] font-mono select-none pointer-events-none z-20 opacity-70 leading-none drop-shadow-[0_0_2px_#8BE9FD]">
+                ──┘
+              </span>
               {/* Top directory path indicator */}
               <div>
                 <div className="flex items-center justify-between mb-2">

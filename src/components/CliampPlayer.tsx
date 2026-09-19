@@ -467,8 +467,22 @@ export const CliampPlayer: React.FC = () => {
   }
 
   return (
-    <div className="border border-[#282C3F] bg-[#0E101A] rounded-sm font-mono shadow-2xl overflow-hidden text-[#D8DEE9]">
-      {/* Title Bar (Classic Winamp / CLiAMP Style) */}
+    <div className="relative border-2 border-[#282C3F] bg-[#0E101A] rounded-sm font-mono shadow-2xl overflow-hidden text-[#D8DEE9]">
+      {/* MGS2 Tactical Corner Reticle Accents */}
+      <span className="absolute top-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+        ┌──
+      </span>
+      <span className="absolute top-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+        ──┐
+      </span>
+      <span className="absolute bottom-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+        └──
+      </span>
+      <span className="absolute bottom-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+        ──┘
+      </span>
+
+      {/* Title Bar (Classic Winamp / CLiAMP Style with MGS2 Codec accent) */}
       <div className="bg-gradient-to-r from-[#1E2235] via-[#2A2E45] to-[#1E2235] px-3 py-1.5 border-b border-[#282C3F] flex items-center justify-between select-none">
         <div className="flex items-center space-x-2 text-xs">
           <Radio className="w-3.5 h-3.5 text-[#CBA6F7] animate-pulse" />
@@ -476,7 +490,7 @@ export const CliampPlayer: React.FC = () => {
             CLiAMP v2.95 // TERMINAL RADIO
           </span>
           <span className="hidden sm:inline-block text-[10px] text-[#A6E3A1] bg-[#162024] px-1.5 py-0.2 rounded border border-[#A6E3A1]/30">
-            ONLINE STREAM
+            CODEC 140.85 MHz
           </span>
         </div>
 

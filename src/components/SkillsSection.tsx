@@ -45,7 +45,35 @@ export const SkillsSection: React.FC = () => {
       </div>
 
       {/* Terminal Window Box */}
-      <div className="border border-[#282C3F] bg-[#111420]/95 rounded-sm shadow-lg overflow-hidden">
+      <div className="relative border-2 border-[#282C3F] bg-[#111420]/95 rounded-sm shadow-xl overflow-hidden">
+        {/* MGS2 Tactical Corner Reticle Accents */}
+        <span className="absolute top-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          ┌──
+        </span>
+        <span className="absolute top-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          ──┐
+        </span>
+        <span className="absolute bottom-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          └──
+        </span>
+        <span className="absolute bottom-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          ──┘
+        </span>
+
+        {/* MGS2 Tactical Header Strip */}
+        <div className="bg-[#080B14] px-3 py-1 border-b border-[#1E2438] flex items-center justify-between text-[10px] font-mono text-[#7F849C] select-none">
+          <div className="flex items-center space-x-2">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#A6E3A1] animate-pulse" />
+            <span className="text-[#8BE9FD] font-bold tracking-wider">MGS2 // TECH TELEMETRY & SPECS</span>
+            <span className="text-[#CBA6F7] text-[9px] bg-[#161B2E] px-1.5 py-0.2 rounded border border-[#2B314F]">
+              SEC-03
+            </span>
+          </div>
+          <span className="text-[#A6E3A1] font-mono font-bold bg-[#0D151F] px-1.5 py-0.5 rounded border border-[#A6E3A1]/30 text-[9px]">
+            140.85 MHz
+          </span>
+        </div>
+
         {/* Terminal Header */}
         <div className="bg-[#181B28] px-4 py-2 border-b border-[#282C3F] flex items-center justify-between font-mono text-xs text-[#7F849C]">
           <div className="flex items-center space-x-2">

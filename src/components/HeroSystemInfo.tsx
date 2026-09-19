@@ -50,15 +50,32 @@ Location: Chennai, India`
   return (
     <section id="home" className="py-6 sm:py-8">
       {/* Terminal Window Container */}
-      <div className="border border-[#282C3F] bg-[#111420]/95 rounded-sm shadow-xl shadow-black/40 overflow-hidden">
-        {/* Terminal Titlebar */}
+      <div className="relative border-2 border-[#23283E] bg-[#111420]/95 rounded-sm shadow-xl shadow-black/40 overflow-hidden">
+        {/* MGS2 Tactical Corner Reticle Accents */}
+        <span className="absolute top-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          ┌──
+        </span>
+        <span className="absolute top-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          ──┐
+        </span>
+        <span className="absolute bottom-0 left-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          └──
+        </span>
+        <span className="absolute bottom-0 right-0 text-[#8BE9FD] text-[11px] font-mono select-none pointer-events-none z-30 opacity-80 leading-none drop-shadow-[0_0_3px_#8BE9FD]">
+          ──┘
+        </span>
+
+        {/* Terminal Titlebar with MGS2 Codec Accent */}
         <div className="bg-[#181B28] px-4 py-2 border-b border-[#282C3F] flex items-center justify-between font-mono text-xs">
           <div className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-[#F38BA8] inline-block" />
             <span className="w-3 h-3 rounded-full bg-[#F9E2AF] inline-block" />
             <span className="w-3 h-3 rounded-full bg-[#A6E3A1] inline-block" />
-            <span className="text-[#7F849C] ml-2 font-mono">
+            <span className="text-[#7F849C] ml-2 font-mono hidden sm:inline">
               fastfetch --load-config ~/.config/fastfetch/config.jsonc
+            </span>
+            <span className="text-[#8BE9FD] font-mono text-[10px] bg-[#0E1524] px-2 py-0.5 rounded border border-[#8BE9FD]/30 sm:ml-2">
+              MGS2 // SOLITON-LINK
             </span>
           </div>
 
@@ -70,7 +87,10 @@ Location: Chennai, India`
             >
               {copyFeedback ? '[ COPIED! ]' : '[ COPY INFO ]'}
             </button>
-            <span className="text-[#585B70]">tty1</span>
+            <span className="text-[#A6E3A1] font-mono text-[10px] bg-[#0A1215] px-1.5 py-0.5 rounded border border-[#A6E3A1]/30">
+              140.85 MHz
+            </span>
+            <span className="text-[#585B70] hidden sm:inline">tty1</span>
           </div>
         </div>
 

@@ -92,8 +92,11 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#A6E3A1]"></span>
             </span>
             <span className="text-[#A6E3A1] font-semibold tracking-wider">● ONLINE</span>
+            <span className="text-[#8BE9FD] font-mono text-[10px] bg-[#0E1524] px-1.5 py-0.2 rounded border border-[#8BE9FD]/30 hidden sm:inline-block">
+              CODEC 140.85 MHz
+            </span>
             <span className="text-[#585B70] hidden md:inline">| 24ms (chennai-in)</span>
-            <span className="text-[#585B70] hidden lg:inline">| HTTP/3 TLS 1.3</span>
+            <span className="text-[#585B70] hidden lg:inline">| SECURE CIPHER</span>
           </div>
         </div>
 

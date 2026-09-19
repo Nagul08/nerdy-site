@@ -21,7 +21,11 @@ export const TerminalFooter: React.FC<TerminalFooterProps> = ({ onScrollToTop })
             <GitBranch className="w-3 h-3" /> main
           </span>
           <span className="text-[#585B70] hidden sm:inline">|</span>
-          <span className="hidden sm:inline text-[#89B4FA]">TypeScript + Vite</span>
+          <span className="text-[#8BE9FD] font-mono text-[10px] bg-[#0E1524] px-1.5 py-0.2 rounded border border-[#8BE9FD]/30 hidden md:inline-block">
+            CODEC 140.85 MHz
+          </span>
+          <span className="text-[#585B70] hidden lg:inline">|</span>
+          <span className="hidden lg:inline text-[#89B4FA]">TypeScript + Vite</span>
         </div>
 
         <div className="flex items-center space-x-3">
