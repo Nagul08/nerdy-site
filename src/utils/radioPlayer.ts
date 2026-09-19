@@ -103,7 +103,6 @@ function getAudio(): HTMLAudioElement {
 }
 
 let timerInterval: ReturnType<typeof setInterval> | null = null
-let meterInterval: ReturnType<typeof setInterval> | null = null
 
 function startMeters() {
   stopMeters()
@@ -111,26 +110,14 @@ function startMeters() {
     state = { ...state, elapsedSeconds: state.elapsedSeconds + 1 }
     emit()
   }, 1000)
-
-  meterInterval = setInterval(() => {
-    state = {
-      ...state,
-      eqBars: Array.from({ length: 16 }, () => Math.floor(Math.random() * 8) + 1),
-      vuLeft: Math.floor(Math.random() * 6) + 4,
-      vuRight: Math.floor(Math.random() * 6) + 3,
-    }
-    emit()
-  }, 120)
 }
 
 function stopMeters() {
   if (timerInterval) clearInterval(timerInterval)
-  if (meterInterval) clearInterval(meterInterval)
   timerInterval = null
-  meterInterval = null
   state = {
     ...state,
-    eqBars: [1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1],
+    eqBars: [2, 4, 3, 5, 2, 6, 4, 3, 5, 2, 4, 3, 5, 3, 4, 2],
     vuLeft: 1,
     vuRight: 1,
   }
@@ -167,7 +154,7 @@ export const radioPlayer = {
         state = { ...state, isPlaying: true, isLoading: false }
         startMeters()
         emit()
-      } catch (err) {
+      } catch {
         state = { ...state, isPlaying: false, isLoading: false }
         stopMeters()
         emit()

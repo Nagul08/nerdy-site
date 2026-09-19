@@ -1,7 +1,7 @@
-import spideyBg from '../assets/pics/Spidey.png'
-import kiintBg from '../assets/pics/kiint.jpg'
-import spideoBg from '../assets/pics/spideo.png'
-import spikoBg from '../assets/pics/spiko.png'
+import spideyBg from '../assets/pics/Spidey.webp'
+import kiintBg from '../assets/pics/kiint.webp'
+import spideoBg from '../assets/pics/spideo.webp'
+import spikoBg from '../assets/pics/spiko.webp'
 import type { ThemeName } from '../types'
 
 export interface ThemeConfig {

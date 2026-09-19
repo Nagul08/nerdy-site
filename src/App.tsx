@@ -147,7 +147,8 @@ export default function App() {
       }
     >
       {/* ── Fixed High-Visibility Wallpaper Backgrounds (Cross-Fading Stack) ── */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#070911]">
+      {/* ── Fixed High-Visibility Wallpaper Backgrounds (Cross-Fading Stack) ── */}
+      <div className="fixed-bg-stage bg-[#070911]">
         {THEME_KEYS.map((key) => {
           const theme = THEMES[key]
           const isActive = currentTheme === key
@@ -158,20 +159,20 @@ export default function App() {
               alt={theme.name}
               loading={isActive ? 'eager' : 'lazy'}
               decoding="async"
-              className={`absolute inset-0 w-full h-full object-cover object-center brightness-[0.65] contrast-[1.08] saturate-[1.1] transition-all duration-1000 ease-in-out select-none ${
+              className={`absolute inset-0 w-full h-full object-cover object-[36%_42%] sm:object-center brightness-[0.68] contrast-[1.06] saturate-[1.08] transition-opacity duration-700 ease-in-out select-none will-change-[opacity] ${
                 isActive
-                  ? 'opacity-100 scale-100 z-10'
-                  : 'opacity-0 scale-[1.03] pointer-events-none z-0'
+                  ? 'opacity-100 z-10'
+                  : 'opacity-0 pointer-events-none z-0'
               }`}
             />
           )
         })}
         {/* Atmospheric Tint: Clean glass wash ensuring all text is easily readable while photo shines through */}
         <div
-          className="absolute inset-0 transition-colors duration-1000 ease-in-out z-20"
+          className="absolute inset-0 transition-opacity duration-700 ease-in-out z-20 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse at center, rgba(6, 8, 14, 0.52) 0%, rgba(6, 8, 14, 0.76) 75%, rgba(6, 8, 14, 0.90) 100%)',
+              'radial-gradient(ellipse at center, rgba(6, 8, 14, 0.48) 0%, rgba(6, 8, 14, 0.74) 75%, rgba(6, 8, 14, 0.90) 100%)',
           }}
         />
         {/* Subtle Scanline Overlay */}

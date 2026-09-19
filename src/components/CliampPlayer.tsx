@@ -9,7 +9,7 @@ import {
   Disc3,
 } from 'lucide-react'
 import { soundFx } from '../utils/audio'
-import spideyImg from '../assets/Spidey.png'
+import vinylArt from '../assets/vinyl-art.webp'
 import { useRadioPlayer, RADIO_STATIONS } from '../utils/radioPlayer'
 
 export const CliampPlayer: React.FC = () => {
@@ -20,9 +20,6 @@ export const CliampPlayer: React.FC = () => {
     isMuted,
     volume,
     elapsedSeconds,
-    eqBars,
-    vuLeft,
-    vuRight,
     currentStation,
     togglePlay,
     selectStation,
@@ -146,7 +143,7 @@ export const CliampPlayer: React.FC = () => {
                     }}
                   >
                     <img
-                      src={spideyImg}
+                      src={vinylArt}
                       alt="Spidey Vinyl Disc Artwork"
                       className="w-full h-full object-cover object-center filter contrast-125 saturate-110 select-none"
                     />
@@ -239,16 +236,21 @@ export const CliampPlayer: React.FC = () => {
                 </div>
               </div>
 
-              {/* 16-Band Animated Visualizer EQ */}
+              {/* 16-Band Animated Visualizer EQ (GPU-Accelerated) */}
               <div className="mt-3 pt-3 border-t border-white/10">
                 <div className="flex items-end justify-between gap-1 h-10 px-1 bg-black/40 rounded-lg p-2 border border-white/5">
-                  {eqBars.map((val, idx) => (
+                  {[0.4, 0.65, 0.35, 0.85, 0.5, 0.75, 0.6, 0.38, 0.8, 0.55, 0.9, 0.45, 0.7, 0.32, 0.6, 0.42].map((dur, idx) => (
                     <span
                       key={idx}
                       style={{
-                        height: `${Math.max(12, (val / 8) * 100)}%`,
+                        height: '100%',
+                        animation: isPlaying
+                          ? `eqBarBounce ${dur}s ease-in-out infinite alternate`
+                          : 'none',
+                        animationDelay: `${(idx * 0.06).toFixed(2)}s`,
+                        transform: isPlaying ? undefined : 'scaleY(0.15)',
                       }}
-                      className={`flex-1 rounded-xs transition-all duration-100 ${
+                      className={`flex-1 rounded-xs animate-eq-bar transition-opacity duration-200 ${
                         isPlaying
                           ? idx % 2 === 0
                             ? 'bg-accent shadow-[0_0_8px_var(--accent-primary)]'
@@ -268,9 +270,9 @@ export const CliampPlayer: React.FC = () => {
                     {Array.from({ length: 8 }).map((_, i) => (
                       <span
                         key={i}
-                        className={`flex-1 h-1.5 rounded-xs ${
-                          isPlaying && i < vuLeft
-                            ? i > 5
+                        className={`flex-1 h-1.5 rounded-xs transition-opacity duration-200 ${
+                          isPlaying && i < 6
+                            ? i >= 6
                               ? 'bg-[#EF4444]'
                               : 'bg-accent'
                             : 'bg-white/10'
@@ -287,9 +289,9 @@ export const CliampPlayer: React.FC = () => {
                     {Array.from({ length: 8 }).map((_, i) => (
                       <span
                         key={i}
-                        className={`flex-1 h-1.5 rounded-xs ${
-                          isPlaying && i < vuRight
-                            ? i > 5
+                        className={`flex-1 h-1.5 rounded-xs transition-opacity duration-200 ${
+                          isPlaying && i < 5
+                            ? i >= 6
                               ? 'bg-[#EF4444]'
                               : 'bg-accent'
                             : 'bg-white/10'

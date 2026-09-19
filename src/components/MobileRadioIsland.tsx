@@ -11,7 +11,7 @@ import {
   Radio,
 } from 'lucide-react'
 import { soundFx } from '../utils/audio'
-import spideyImg from '../assets/Spidey.png'
+import vinylArt from '../assets/vinyl-art.webp'
 import { useRadioPlayer, RADIO_STATIONS } from '../utils/radioPlayer'
 
 export const MobileRadioIsland: React.FC = () => {
@@ -23,7 +23,6 @@ export const MobileRadioIsland: React.FC = () => {
     isMuted,
     volume,
     elapsedSeconds,
-    eqBars,
     currentStation,
     togglePlay,
     selectStation,
@@ -70,7 +69,7 @@ export const MobileRadioIsland: React.FC = () => {
               ? '0 8px 32px rgba(0, 0, 0, 0.7), 0 0 16px rgba(var(--accent-rgb), 0.2)'
               : '0 8px 24px rgba(0, 0, 0, 0.65)',
           }}
-          className={`px-3 py-2 rounded-full bg-[#080B14]/92 backdrop-blur-xl border flex items-center justify-between transition-all duration-300 cursor-pointer active:scale-[0.98] ${
+          className={`px-3 py-2 rounded-full glass-island-dock border flex items-center justify-between transition-all duration-300 cursor-pointer active:scale-[0.98] ${
             isExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
         >
@@ -78,7 +77,7 @@ export const MobileRadioIsland: React.FC = () => {
           <div className="flex items-center space-x-2.5 min-w-0">
             <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 border border-white/20 shadow-md">
               <img
-                src={spideyImg}
+                src={vinylArt}
                 alt="Vinyl Artwork"
                 className={`w-full h-full object-cover select-none ${
                   isPlaying ? 'animate-vinyl-spin' : ''
@@ -215,7 +214,7 @@ export const MobileRadioIsland: React.FC = () => {
                   }`}
                 >
                   <img
-                    src={spideyImg}
+                    src={vinylArt}
                     alt="Turntable Center Vinyl"
                     className="w-full h-full object-cover select-none"
                   />
@@ -234,17 +233,22 @@ export const MobileRadioIsland: React.FC = () => {
                 </div>
               </div>
 
-              {/* Dynamic 16-Band Cyber Audio Spectrum */}
+              {/* Dynamic 16-Band Cyber Audio Spectrum (GPU-Accelerated) */}
               <div className="flex items-end justify-center space-x-1 h-6 mt-3 px-4 py-1 rounded-lg bg-black/40 border border-white/5">
-                {eqBars.map((val, idx) => (
+                {[0.4, 0.65, 0.35, 0.85, 0.5, 0.75, 0.6, 0.38, 0.8, 0.55, 0.9, 0.45, 0.7, 0.32, 0.6, 0.42].map((dur, idx) => (
                   <div
                     key={idx}
                     style={{
-                      height: isPlaying ? `${Math.max(15, (val / 8) * 100)}%` : '15%',
+                      height: '100%',
                       backgroundColor: 'var(--accent-primary)',
-                      opacity: isPlaying ? 0.85 : 0.3,
+                      opacity: isPlaying ? 0.85 : 0.25,
+                      animation: isPlaying
+                        ? `eqBarBounce ${dur}s ease-in-out infinite alternate`
+                        : 'none',
+                      animationDelay: `${(idx * 0.06).toFixed(2)}s`,
+                      transform: isPlaying ? undefined : 'scaleY(0.18)',
                     }}
-                    className="w-1.5 rounded-t-sm transition-all duration-100"
+                    className="w-1.5 rounded-t-sm animate-eq-bar transition-opacity duration-200"
                   />
                 ))}
               </div>
