@@ -8,6 +8,7 @@ import { SocialSection } from './components/SocialSection'
 import { ContactSection } from './components/ContactSection'
 import { InteractiveTerminalModal } from './components/InteractiveTerminalModal'
 import { CliampPlayer } from './components/CliampPlayer'
+import { MobileRadioIsland } from './components/MobileRadioIsland'
 import { TerminalFooter } from './components/TerminalFooter'
 import { CryptoGlyphIntro } from './components/CryptoGlyphIntro'
 import { soundFx } from './utils/audio'
@@ -155,6 +156,8 @@ export default function App() {
               key={theme.id}
               src={theme.bgImage}
               alt={theme.name}
+              loading={isActive ? 'eager' : 'lazy'}
+              decoding="async"
               className={`absolute inset-0 w-full h-full object-cover object-center brightness-[0.65] contrast-[1.08] saturate-[1.1] transition-all duration-1000 ease-in-out select-none ${
                 isActive
                   ? 'opacity-100 scale-100 z-10'
@@ -248,6 +251,9 @@ export default function App() {
 
       {/* Clean Footer */}
       <TerminalFooter onScrollToTop={scrollToTop} />
+
+      {/* Dynamic Cyber Island Floating Audio Dock on Mobile */}
+      <MobileRadioIsland />
 
         {/* Interactive CLI Drawer (on ~ or CLI button) */}
         <InteractiveTerminalModal

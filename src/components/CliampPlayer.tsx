@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React from 'react'
 import {
   Play,
   Pause,
@@ -10,181 +10,40 @@ import {
 } from 'lucide-react'
 import { soundFx } from '../utils/audio'
 import spideyImg from '../assets/Spidey.png'
-
-export interface RadioStation {
-  id: string
-  name: string
-  genre: string
-  url: string
-  freq: string
-  code: string
-}
-
-export const RADIO_STATIONS: RadioStation[] = [
-  {
-    id: 'cliamp-lofi',
-    name: 'Lo-Fi Coding Beats',
-    genre: 'Chill / Study / Focus',
-    url: 'https://radio.cliamp.stream/lofi/stream',
-    freq: '140.85 MHz',
-    code: '01 LO-FI',
-  },
-  {
-    id: 'cliamp-synthwave',
-    name: 'Synthwave 80s',
-    genre: 'Retro / Outrun / Neon',
-    url: 'https://radio.cliamp.stream/synthwave/stream',
-    freq: '141.12 MHz',
-    code: '02 SYNTH',
-  },
-  {
-    id: 'nightwave-plaza',
-    name: 'Nightwave Plaza',
-    genre: 'Vaporwave / Future Funk',
-    url: 'https://radio.plaza.one/mp3',
-    freq: '143.75 MHz',
-    code: '03 PLAZA',
-  },
-  {
-    id: 'cliamp-edm',
-    name: 'Cyber EDM',
-    genre: 'Electronic / Cyber Bass',
-    url: 'https://radio.cliamp.stream/edm/stream',
-    freq: '142.33 MHz',
-    code: '04 EDM',
-  },
-]
+import { useRadioPlayer, RADIO_STATIONS } from '../utils/radioPlayer'
 
 export const CliampPlayer: React.FC = () => {
-  const [stationIndex, setStationIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-  const [volume, setVolume] = useState(75) // 0 - 100
-  const [elapsedSeconds, setElapsedSeconds] = useState(0)
-  const [eqBars, setEqBars] = useState<number[]>([2, 4, 3, 5, 2, 6, 4, 3, 5, 2, 4, 3, 5, 3, 4, 2])
-  const [vuLeft, setVuLeft] = useState(4)
-  const [vuRight, setVuRight] = useState(5)
+  const {
+    stationIndex,
+    isPlaying,
+    isLoading,
+    isMuted,
+    volume,
+    elapsedSeconds,
+    eqBars,
+    vuLeft,
+    vuRight,
+    currentStation,
+    togglePlay,
+    selectStation,
+    nextStation,
+    setVolume,
+    toggleMute,
+  } = useRadioPlayer()
 
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const currentStation = RADIO_STATIONS[stationIndex]
-
-  // Setup / Clean Audio Element
-  useEffect(() => {
-    const audio = new Audio()
-    audio.crossOrigin = 'anonymous'
-    audio.preload = 'none'
-    audioRef.current = audio
-
-    const handlePlaying = () => {
-      setIsLoading(false)
-      setIsPlaying(true)
-    }
-
-    const handleWaiting = () => {
-      setIsLoading(true)
-    }
-
-    const handleError = () => {
-      setIsLoading(false)
-      setIsPlaying(false)
-    }
-
-    audio.addEventListener('playing', handlePlaying)
-    audio.addEventListener('waiting', handleWaiting)
-    audio.addEventListener('error', handleError)
-
-    return () => {
-      audio.pause()
-      audio.removeEventListener('playing', handlePlaying)
-      audio.removeEventListener('waiting', handleWaiting)
-      audio.removeEventListener('error', handleError)
-    }
-  }, [])
-
-  // Sync Volume
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume / 100
-    }
-  }, [volume, isMuted])
-
-  // Track listening elapsed time & EQ / VU meters
-  useEffect(() => {
-    let timer: ReturnType<typeof setInterval> | undefined
-    let eqTimer: ReturnType<typeof setInterval> | undefined
-
-    if (isPlaying) {
-      timer = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1)
-      }, 1000)
-
-      eqTimer = setInterval(() => {
-        setEqBars(Array.from({ length: 16 }, () => Math.floor(Math.random() * 8) + 1))
-        setVuLeft(Math.floor(Math.random() * 6) + 4)
-        setVuRight(Math.floor(Math.random() * 6) + 3)
-      }, 120)
-    } else {
-      setEqBars([1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1])
-      setVuLeft(1)
-      setVuRight(1)
-    }
-
-    return () => {
-      if (timer) clearInterval(timer)
-      if (eqTimer) clearInterval(eqTimer)
-    }
-  }, [isPlaying])
-
-  const handleTogglePlay = async () => {
+  const handleTogglePlay = () => {
     soundFx.playClick('enter')
-    if (!audioRef.current) return
-
-    if (isPlaying) {
-      audioRef.current.pause()
-      setIsPlaying(false)
-    } else {
-      setIsLoading(true)
-      try {
-        if (!audioRef.current.src || audioRef.current.src !== currentStation.url) {
-          audioRef.current.src = currentStation.url
-          audioRef.current.load()
-        }
-        await audioRef.current.play()
-        setIsPlaying(true)
-        setIsLoading(false)
-      } catch (err) {
-        console.error('Audio play error:', err)
-        setIsLoading(false)
-        setIsPlaying(false)
-      }
-    }
+    togglePlay()
   }
 
   const handleSelectStation = (index: number) => {
-    if (index === stationIndex) return
     soundFx.playClick('key')
-    setStationIndex(index)
-    setElapsedSeconds(0)
-
-    if (isPlaying && audioRef.current) {
-      setIsLoading(true)
-      audioRef.current.src = RADIO_STATIONS[index].url
-      audioRef.current.load()
-      audioRef.current.play().then(() => {
-        setIsLoading(false)
-        setIsPlaying(true)
-      }).catch(() => {
-        setIsLoading(false)
-        setIsPlaying(false)
-      })
-    }
+    selectStation(index)
   }
 
   const handleNextStation = () => {
     soundFx.playClick('key')
-    const nextIdx = (stationIndex + 1) % RADIO_STATIONS.length
-    handleSelectStation(nextIdx)
+    nextStation()
   }
 
   const formatTimer = (sec: number) => {
@@ -194,7 +53,7 @@ export const CliampPlayer: React.FC = () => {
   }
 
   return (
-    <section id="audio" className="py-4 scroll-mt-20 font-mono">
+    <section id="audio" className="hidden md:block py-4 scroll-mt-20 font-mono">
       {/* Frosted Glass Cyberdeck Audio Unit Housing */}
       <div className="frosted-glass rounded-2xl p-5 sm:p-7 shadow-2xl relative overflow-hidden transition-all duration-300">
         
@@ -476,7 +335,7 @@ export const CliampPlayer: React.FC = () => {
               {/* Volume Slider & Mute Toggle */}
               <div className="flex items-center space-x-2 bg-[#05070D]/80 px-3 py-2 rounded-xl border border-white/10 shadow-inner">
                 <button
-                  onClick={() => setIsMuted(!isMuted)}
+                  onClick={() => toggleMute()}
                   className="text-[#94A3B8] hover:text-[#F1F5F9] cursor-pointer"
                   title={isMuted ? 'Unmute' : 'Mute'}
                 >
@@ -494,7 +353,7 @@ export const CliampPlayer: React.FC = () => {
                   value={isMuted ? 0 : volume}
                   onChange={(e) => {
                     setVolume(Number(e.target.value))
-                    if (isMuted) setIsMuted(false)
+                    if (isMuted) toggleMute()
                   }}
                   className="w-16 sm:w-24 h-1 bg-[#1E2436] rounded-lg appearance-none cursor-pointer accent-ctrl"
                   title="Volume Control"

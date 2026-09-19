@@ -8,7 +8,7 @@ interface TerminalFooterProps {
 
 export const TerminalFooter: React.FC<TerminalFooterProps> = ({ onScrollToTop }) => {
   return (
-    <footer className="border-t border-[#181d2e] bg-[#070911]/85 backdrop-blur-md font-mono text-xs text-[#94A3B8] py-8 transition-colors">
+    <footer className="border-t border-[#181d2e] bg-[#070911]/85 backdrop-blur-md font-mono text-xs text-[#94A3B8] pt-8 pb-24 sm:pb-8 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <div className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
