@@ -12,7 +12,7 @@ import { TerminalFooter } from './components/TerminalFooter'
 import { CryptoGlyphIntro } from './components/CryptoGlyphIntro'
 import { soundFx } from './utils/audio'
 import type { ThemeName } from './types'
-import { THEMES, getRandomTheme } from './utils/themeConfig'
+import { THEMES, THEME_KEYS, getRandomTheme } from './utils/themeConfig'
 import { useAnimatedFavicon } from './utils/useAnimatedFavicon'
 
 export default function App() {
@@ -136,7 +136,7 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen text-[#F8FAFC] font-mono selection:bg-accent selection:text-[#08090C] theme-${currentTheme} relative overflow-x-hidden`}
+      className={`min-h-screen text-[#F8FAFC] font-mono selection:bg-accent selection:text-[#08090C] theme-${currentTheme} relative overflow-x-hidden transition-colors duration-700 ease-in-out`}
       style={
         {
           '--accent-primary': activeTheme.primaryHex,
@@ -145,24 +145,34 @@ export default function App() {
         } as React.CSSProperties
       }
     >
-      {/* ── Fixed High-Visibility Wallpaper Background from pics/ ── */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <img
-          key={activeTheme.id}
-          src={activeTheme.bgImage}
-          alt={activeTheme.name}
-          className="w-full h-full object-cover object-center brightness-[0.65] contrast-[1.08] saturate-[1.1] transition-all duration-700 select-none scale-100"
-        />
+      {/* ── Fixed High-Visibility Wallpaper Backgrounds (Cross-Fading Stack) ── */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#070911]">
+        {THEME_KEYS.map((key) => {
+          const theme = THEMES[key]
+          const isActive = currentTheme === key
+          return (
+            <img
+              key={theme.id}
+              src={theme.bgImage}
+              alt={theme.name}
+              className={`absolute inset-0 w-full h-full object-cover object-center brightness-[0.65] contrast-[1.08] saturate-[1.1] transition-all duration-1000 ease-in-out select-none ${
+                isActive
+                  ? 'opacity-100 scale-100 z-10'
+                  : 'opacity-0 scale-[1.03] pointer-events-none z-0'
+              }`}
+            />
+          )
+        })}
         {/* Atmospheric Tint: Clean glass wash ensuring all text is easily readable while photo shines through */}
         <div
-          className="absolute inset-0 transition-colors duration-700"
+          className="absolute inset-0 transition-colors duration-1000 ease-in-out z-20"
           style={{
             background:
               'radial-gradient(ellipse at center, rgba(6, 8, 14, 0.52) 0%, rgba(6, 8, 14, 0.76) 75%, rgba(6, 8, 14, 0.90) 100%)',
           }}
         />
         {/* Subtle Scanline Overlay */}
-        <div className="absolute inset-0 crt-overlay opacity-15 pointer-events-none" />
+        <div className="absolute inset-0 crt-overlay opacity-15 pointer-events-none z-30" />
       </div>
 
       {/* 1. Old TV Glow Effect (Cathode Tube Curvature, Vignette & Phosphor Bloom) */}

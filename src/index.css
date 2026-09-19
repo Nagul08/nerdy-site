@@ -78,6 +78,19 @@
   animation: blink 1s cubic-bezier(1, 0, 0, 1) infinite;
 }
 
+/* Enable smooth native CSS variable interpolation on supported browsers */
+@property --accent-primary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #F97316;
+}
+
+@property --accent-secondary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #FBBF24;
+}
+
 /* Theme Variables & Fallbacks */
 :root {
   --accent-primary: #F97316;
@@ -136,7 +149,23 @@
     inset 0 1px 0 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Comprehensive Theme Accent Utility Classes */
+/* Comprehensive Theme Accent Utility Classes with Smooth Morphing Transitions */
+.text-accent,
+.text-accent-sec,
+.bg-accent,
+.bg-accent-sec,
+.bg-accent-soft,
+.border-accent,
+.border-accent-subtle,
+.accent-glow,
+.accent-box-glow {
+  transition: color 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              text-shadow 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .text-accent {
   color: var(--accent-primary) !important;
 }
