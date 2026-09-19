@@ -47,6 +47,7 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 
   const navItems = [
     { id: 'home', command: '~/home' },
+    { id: 'audio', command: '~/radio' },
     { id: 'about', command: '~/about' },
     { id: 'projects', command: '~/projects' },
     { id: 'skills', command: '~/skills' },

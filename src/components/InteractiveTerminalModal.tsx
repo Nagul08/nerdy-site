@@ -119,6 +119,10 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
                 <span className="text-[#7F849C]"> - Toggle digital rain effect</span>
               </div>
               <div>
+                <span className="text-[#8BE9FD] font-bold">cliamp</span>
+                <span className="text-[#7F849C]"> - Tune CLiAMP online radio streamer</span>
+              </div>
+              <div>
                 <span className="text-[#8BE9FD] font-bold">theme [name]</span>
                 <span className="text-[#7F849C]"> - catppuccin | tokyo | cyber | nord</span>
               </div>
@@ -222,6 +226,19 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
         setLogs([])
         setInputVal('')
         return
+
+      case 'cliamp':
+      case 'radio':
+      case 'music':
+        responseNode = (
+          <div className="text-xs space-y-1">
+            <div className="text-[#A6E3A1] font-semibold">&gt; CLiAMP v2.95 Audio Subsystem</div>
+            <div className="text-[#8BE9FD]">Tuned to radio.cliamp.stream/lofi/stream (128 kbps stereo)</div>
+            <div className="text-[#7F849C]">&gt; Jumped to #audio rack. Press PLAY to stream live!</div>
+          </div>
+        )
+        onNavigate('audio')
+        break
 
       case 'matrix':
         onToggleMatrix()
@@ -369,7 +386,7 @@ export const InteractiveTerminalModal: React.FC<InteractiveTerminalModalProps> =
     )
   }
 
-  const quickCommands = ['help', 'about', 'projects', 'skills', 'github', 'contact', 'matrix', 'clear']
+  const quickCommands = ['help', 'cliamp', 'about', 'projects', 'skills', 'github', 'contact', 'matrix', 'clear']
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">

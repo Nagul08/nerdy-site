@@ -8,6 +8,7 @@ import { GitHubSection } from './components/GitHubSection'
 import { SocialSection } from './components/SocialSection'
 import { ContactSection } from './components/ContactSection'
 import { InteractiveTerminalModal } from './components/InteractiveTerminalModal'
+import { CliampPlayer } from './components/CliampPlayer'
 import { MatrixRain } from './components/MatrixRain'
 import { TerminalFooter } from './components/TerminalFooter'
 import type { ThemeName } from './types'
@@ -22,7 +23,7 @@ export default function App() {
 
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ['home', 'about', 'projects', 'skills', 'github', 'social', 'contact']
+    const sectionIds = ['home', 'audio', 'about', 'projects', 'skills', 'github', 'social', 'contact']
     const observers: IntersectionObserver[] = []
 
     sectionIds.forEach((id) => {
@@ -115,6 +116,18 @@ export default function App() {
           onNavigate={scrollToSection}
           onOpenTerminal={() => setIsTerminalOpen(true)}
         />
+
+        {/* CLiAMP Retro Audio Player (Icecast/Shoutcast Online Radio) */}
+        <section id="audio" className="scroll-mt-24 space-y-2">
+          <div className="flex items-center justify-between text-xs text-[#7F849C] px-1 font-mono">
+            <div className="flex items-center space-x-2">
+              <span className="text-[#CBA6F7]">01.5 //</span>
+              <span className="text-[#D8DEE9] font-bold">AUDIO SUBSYSTEM (CLIAMP TUI STREAMER)</span>
+            </div>
+            <span className="text-[11px] text-[#A6E3A1]">icecast/shoutcast • 128kbps stereo</span>
+          </div>
+          <CliampPlayer />
+        </section>
 
         {/* About Me Section & Systemctl Status Banner */}
         <div className="space-y-4">
